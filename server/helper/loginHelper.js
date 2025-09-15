@@ -1,4 +1,4 @@
-import userModel from "../model/useModel.js";
+import userModel from "../model/userModel.js";
 import oauthModel from '../model/oauthModel.js';
 import bcrypt from 'bcrypt';
 
