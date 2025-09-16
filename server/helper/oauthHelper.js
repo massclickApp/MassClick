@@ -25,7 +25,7 @@ const saveToken = async function (token, client, user) {
         accessToken: token.accessToken,
         accessTokenExpiresAt: new Date(Date.now() + 20 * 60 * 1000), 
         refreshToken: token.refreshToken,
-        refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 
         client: {
             id: client.id,
             clientId: client.clientId,
