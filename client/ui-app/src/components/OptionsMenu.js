@@ -10,14 +10,27 @@ import ListItemIcon, { listItemIconClasses } from '@mui/material/ListItemIcon';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import MenuButton from './MenuButton';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../redux/actions/authAction.js';
 
 const MenuItem = styled(MuiMenuItem)({
   margin: '2px 0',
 });
 
 export default function OptionsMenu() {
-  const [anchorEl, setAnchorEl] = React.useState(null); // JS: remove type
+  const [anchorEl, setAnchorEl] = React.useState(null); 
   const open = Boolean(anchorEl);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
+
+const handleLogout = () => {
+  const id = user?.userId?.$oid;  
+  dispatch(logout(id));
+  navigate("/");  
+};
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -56,17 +69,21 @@ export default function OptionsMenu() {
         <MenuItem onClick={handleClose}>Add another account</MenuItem>
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <Divider />
-        <MenuItem
-          onClick={handleClose}
-          sx={{
-            [`& .${listItemIconClasses.root}`]: { ml: 'auto', minWidth: 0 },
-          }}
-        >
-          <ListItemText>Logout</ListItemText>
-          <ListItemIcon>
-            <LogoutRoundedIcon fontSize="small" />
-          </ListItemIcon>
-        </MenuItem>
+    <MenuItem
+  onClick={() => {
+    handleLogout();
+    handleClose();
+  }}
+  sx={{
+    [`& .${listItemIconClasses.root}`]: { ml: 'auto', minWidth: 0 },
+  }}
+>
+  <ListItemText>Logout</ListItemText>
+  <ListItemIcon>
+    <LogoutRoundedIcon fontSize="small" />
+  </ListItemIcon>
+</MenuItem>
+
       </Menu>
     </React.Fragment>
   );

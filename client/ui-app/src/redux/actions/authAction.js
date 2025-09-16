@@ -50,17 +50,29 @@ export const login = (username, password) => async (dispatch) => {
 
 
 // Logout
-export const logout = (_id) => async (dispatch) => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) return;
+// authActions.js
+// authActions.js
+export const logout = (id) => async (dispatch) => {
+  const token = localStorage.getItem("accessToken");
 
   try {
-    await axios.delete(`${API_URL}/oauth/logout/${_id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    if (token) {
+      const url = id
+        ? `${API_URL}/oauth/logout/${id}`
+        : `${API_URL}/oauth/logout`;
+
+      await axios.delete(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    }
+  } catch (err) {
+    console.error("Logout error:", err);
+  } finally {
     localStorage.clear();
     dispatch({ type: LOGOUT });
-  } catch (error) {
-    console.error('Logout error:', error);
   }
 };
+
+
+
+
