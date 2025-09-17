@@ -1,0 +1,65 @@
+import { ObjectId } from "mongodb";
+import userClientModel from "../../model/userClientModel/userClientModel.js"
+
+export const createUsersClients = async function (reqBody = {}) {
+    try {
+
+        const data = {
+            ...reqBody,
+        };
+        const usersClientDocument = new userClientModel(data);
+        const result = await usersClientDocument.save();
+        return result;
+    } catch (error) {
+        if (error.message && error.message.duplicateKey) {
+            throw error;
+        }
+        console.error('Error saving userClient:', error);
+        throw error;
+    }
+};
+
+export const viewUserClients = async (id) => {
+    try {
+        if (!ObjectId.isValid(id)) {
+            throw new Error("Invalid user ID");
+        }
+
+        const userClient = await userClientModel.findById(id).lean();
+        if (!userClient) {
+            throw new Error("userClient not found");
+        }
+
+        return userClient;
+    } catch (error) {
+        console.error("Error in getUserById:", error);
+        throw error;
+    }
+};
+export const viewAllUserClients = async () => {
+    try {
+        const usersClient = await userClientModel.find().lean();
+        if (!usersClient) {
+            throw new Error("No usersClient found");
+        }
+        return usersClient;
+    } catch (error) {
+        console.error("Error fetching usersClient:", error);
+        throw error;
+    }
+};
+export const updateUserClients = async (id, data) => {
+    if (!ObjectId.isValid(id)) throw new Error("Invalid user ID");
+
+    const updatedUserClient = await userClientModel.findByIdAndUpdate(id, data, { new: true });
+    if (!updatedUserClient) throw new Error("updatedUserClient not found");
+    return updatedUserClient;
+};
+
+export const deleteUserClients = async (id) => {
+    if (!ObjectId.isValid(id)) throw new Error("Invalid updatedUserClient ID");
+
+    const deletedUserClient = await userClientModel.findByIdAndDelete(id);
+    if (!deletedUserClient) throw new Error("User not found");
+    return deletedUserClient;
+};

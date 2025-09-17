@@ -23,3 +23,48 @@ export const createUsers = async function (reqBody = {}) {
         throw error;
     }
 };
+
+export const viewUser = async (id) => {
+  try {
+    if (!ObjectId.isValid(id)) {
+      throw new Error("Invalid user ID");
+    }
+
+    const user = await userModel.findById(id).lean();
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user;
+  } catch (error) {
+    console.error("Error in getUserById:", error);
+    throw error;
+  }
+};
+export const viewAllUser = async () => {
+  try {
+    const users = await userModel.find().lean();
+    if (!users) {
+      throw new Error("No users found");
+    }
+    return users;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
+};
+export const updateUser = async (id, data) => {
+  if (!ObjectId.isValid(id)) throw new Error("Invalid user ID");
+  
+  const updatedUser = await userModel.findByIdAndUpdate(id, data, { new: true });
+  if (!updatedUser) throw new Error("User not found");
+  return updatedUser;
+};
+
+export const deleteUser = async (id) => {
+  if (!ObjectId.isValid(id)) throw new Error("Invalid user ID");
+  
+  const deletedUser = await userModel.findByIdAndDelete(id);
+  if (!deletedUser) throw new Error("User not found");
+  return deletedUser;
+};

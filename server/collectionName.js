@@ -1,11 +1,13 @@
 export const Collections = {
     USER: 'user',
     OAUTHUSERS: 'oauthusers',
-    CLIENT: 'clients'
+    CLIENT: 'clients',
+    USERCLIENT: 'userclient'
 };
 
 export const {
     USER,
     OAUTHUSERS,
-    CLIENT
+    CLIENT,
+    USERCLIENT
 }= Collections;

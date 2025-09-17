@@ -1,35 +1,34 @@
-  import React from 'react';
-  import { alpha } from '@mui/material/styles';
-  import CssBaseline from '@mui/material/CssBaseline';
-  import Box from '@mui/material/Box';
-  import Stack from '@mui/material/Stack';
+import React from 'react';
+import { alpha } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import { Outlet } from 'react-router-dom';
 
-  import AppNavbar from './components/AppNavbar';
-  import SideMenu from './components/SideMenu';
-  import AppTheme from './theme/AppTheme.js';
-  import Header from './components/Header';
-  import MainGrid from './components/MainGrid';
+import AppNavbar from './components/AppNavbar';
+import SideMenu from './components/SideMenu';
+import AppTheme from './theme/AppTheme.js';
+import Header from './components/Header';
 
-  import {
-    chartsCustomizations,
-    datePickersCustomizations,
-    treeViewCustomizations,
-  } from './theme/customizations';
+import {
+  chartsCustomizations,
+  datePickersCustomizations,
+  treeViewCustomizations,
+} from './theme/customizations';
 
-  const xThemeComponents = {
-    ...chartsCustomizations,
-    ...datePickersCustomizations,
-    ...treeViewCustomizations,
-  };
+const xThemeComponents = {
+  ...chartsCustomizations,
+  ...datePickersCustomizations,
+  ...treeViewCustomizations,
+};
 
-  export default function Dashboard(props) {
-    return (
-      <AppTheme {...props} themeComponents={xThemeComponents}>
-        <CssBaseline enableColorScheme />
+export default function Dashboard(props) {
+  return (
+    <AppTheme {...props} themeComponents={xThemeComponents}>
+      <CssBaseline enableColorScheme />
         <Box sx={{ display: 'flex' }}>
-          {/* Sidebar */}
-          <SideMenu />
+        {/* Sidebar */}
+        <SideMenu />
 
           {/* Navbar */}
           <AppNavbar />
@@ -48,11 +47,10 @@ import { Outlet } from 'react-router-dom';
           >
             <Stack spacing={2} sx={{ alignItems: 'center', mx: 3, pb: 5, mt: { xs: 8, md: 0 } }}>
               <Header />
-              <MainGrid />
               <Outlet />
             </Stack>
           </Box>
         </Box>
-      </AppTheme>
-    );
-  }
+    </AppTheme>
+  );
+}
