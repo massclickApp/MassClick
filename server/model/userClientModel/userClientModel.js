@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { USERCLIENT } from "../collectionName.js";
+import { USERCLIENT } from "../../collectionName.js";
 
 import userClientSchema from "../../schema/userClient/userClientSchema.js"
 

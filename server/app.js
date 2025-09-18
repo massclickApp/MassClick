@@ -4,6 +4,8 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
+import userClientRoutes from './routes/userClientRoute.js'
+import locationRoutes from './routes/locationRoute.js'
 import oauthRoutes from "./routes/oauthRoutes.js";
 
 dotenv.config();
@@ -19,8 +21,8 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json());
 app.use(userRoutes);
 app.use(oauthRoutes);
-
-
+app.use(userClientRoutes);
+app.use(locationRoutes);
 
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Database Connected ✅'))

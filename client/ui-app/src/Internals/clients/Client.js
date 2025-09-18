@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllUsers, createUser } from "../../redux/actions/userAction.js";
+import { getAllUsersClient, createUserClient } from "../../redux/actions/userClientAction.js";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
 import {
   Box,
@@ -19,19 +19,15 @@ import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 export default function UserClients() {
   const dispatch = useDispatch();
   const { users = [], loading, error } = useSelector(
-    (state) => state.userReducer || {}
+    (state) => state.userClientReducer || {}
   );
+
   const [formData, setFormData] = useState({
-    userName: "",
-    contact: "",
-    businessLocation: "",
-    businessCategory: "",
-    emailId: "",
-    role: "",
+    clientId: "", name: "", contact: "", emailId: "", businessName: "", businessAddress: ""
   });
 
   useEffect(() => {
-    dispatch(getAllUsers());
+    dispatch(getAllUsersClient());
   }, [dispatch]);
 
   const handleChange = (e) => {
@@ -41,76 +37,78 @@ export default function UserClients() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(createUser(formData))
+    dispatch(createUserClient(formData))
       .then(() => {
         setFormData({
-          userName: "",
-          contact: "",
-          businessLocation: "",
-          businessCategory: "",
+          clientId: "",
+          name: "",
+          businessName: "",
+          businessAddress: "",
           emailId: "",
-          role: "",
+          contact: "",
         });
-        dispatch(getAllUsers());
+        dispatch(getAllUsersClient());
       })
       .catch((err) => console.error("Create user failed:", err));
   };
-const handleEdit = (row) => {
-  console.log("Edit row:", row);
-};
+  const handleEdit = (row) => {
+    console.log("Edit row:", row);
+  };
 
-const handleDelete = (row) => {
-  console.log("Delete row:", row);
-};
-  const rows = users.map((user, index) => ({
-    id: user._id || index,
-    userName: user.userName,
-    emailId: user.emailId,
-    role: user.role,
-    businessLocation: user.businessLocation || "-",
-    businessCategory: user.businessCategory || "-",
+  const handleDelete = (row) => {
+    console.log("Delete row:", row);
+  };
+  const rows = users.map((users, index) => ({
+    id: users._id || index,
+    clientId: users.clientId,
+    name: users.name,
+    emailId: users.emailId,
+    contact: users.contact,
+    businessName: users.businessName || "-",
+    businessAddress: users.businessAddress || "-",
   }));
 
-const clientList = [
-  { field: "userName", headerName: "User Name", flex: 1 },
-  { field: "emailId", headerName: "Email", flex: 1 },
-  { field: "role", headerName: "Role", flex: 1 },
-  { field: "businessLocation", headerName: "Business Location", flex: 1 },
-  { field: "businessCategory", headerName: "Business Category", flex: 1 },
-  {
-    field: "action",
-    headerName: "Action",
-    flex: 1,
-    sortable: false,
-    filterable: false,
-    renderCell: (params) => (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <IconButton
-          color="primary"
-          size="small"
-          onClick={() => handleEdit(params.row)}
-        >
-          <EditRoundedIcon fontSize="small" />
-        </IconButton>
-        <IconButton
-          color="error"
-          size="small"
-          onClick={() => handleDelete(params.row)}
-        >
-          <DeleteOutlineRoundedIcon fontSize="small" />
-        </IconButton>
-      </div>
-    ),
-  },
-];
+  const clientList = [
+    { field: "clientId", headerName: "Client ID", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "emailId", headerName: "Email", flex: 1 },
+    { field: "contact", headerName: "Contact", flex: 1 },
+    { field: "businessName", headerName: "Business Name", flex: 1 },
+    { field: "businessAddress", headerName: "Business Address", flex: 1 },
+    {
+      field: "action",
+      headerName: "Action",
+      flex: 1,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={() => handleEdit(params.row)}
+          >
+            <EditRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            color="error"
+            size="small"
+            onClick={() => handleDelete(params.row)}
+          >
+            <DeleteOutlineRoundedIcon fontSize="small" />
+          </IconButton>
+        </div>
+      ),
+    },
+  ];
 
   const fields = [
-    { label: "UserName", name: "userName", required: true, type: "text" },
+    { label: "Client Id", name: "clientId", required: true, type: "text" },
+    { label: "Name", name: "name", required: true, type: "text" },
     { label: "Contact", name: "contact", required: true, type: "text" },
-    { label: "Role", name: "role", required: true, type: "text" },
     { label: "EmailId", name: "emailId", required: true, type: "email" },
-    { label: "BusinessLocation", name: "businessLocation", required: true, type: "text" },
-    { label: "BusinessCategory", name: "businessCategory", required: true, type: "text" },
+    { label: "BusinessName", name: "businessName", required: true, type: "text" },
+    { label: "BusinessAddress", name: "businessAddress", required: true, type: "text" },
   ];
 
   return (
@@ -133,7 +131,7 @@ const clientList = [
                   fullWidth
                   type={field.type}
                   label={field.label}
-                  name={field.name} 
+                  name={field.name}
                   variant="standard"
                   value={formData[field.name]}
                   onChange={handleChange}
@@ -153,17 +151,17 @@ const clientList = [
               <Box
                 sx={{
                   display: 'flex',
-                  justifyContent: { xs: 'flex-end', sm: 'flex-start' }, 
-                  mt: 4, 
+                  justifyContent: { xs: 'flex-end', sm: 'flex-start' },
+                  mt: 4,
                 }}
               >
                 <Button
                   type="submit"
                   variant="contained"
                   disabled={loading}
-                  sx={{ minWidth: 150 }} 
+                  sx={{ minWidth: 150 }}
                 >
-                  {loading ? <CircularProgress size={24} /> : "Create User"}
+                  {loading ? <CircularProgress size={24} /> : "Create Client"}
                 </Button>
               </Box>
             </Grid>

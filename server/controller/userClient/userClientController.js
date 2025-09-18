@@ -1,5 +1,5 @@
 import { createUsersClients, viewUserClients, viewAllUserClients, updateUserClients, deleteUserClients } from "../../helper/userClient/userClientHelper.js";
-import { BAD_REQUEST } from "../errorCodes.js";
+import { BAD_REQUEST } from "../../errorCodes.js";
 
 export const addUsersClientAction = async (req, res) => {
     try {
