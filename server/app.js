@@ -7,6 +7,8 @@ import userRoutes from './routes/userRoutes.js';
 import userClientRoutes from './routes/userClientRoute.js'
 import locationRoutes from './routes/locationRoute.js'
 import oauthRoutes from "./routes/oauthRoutes.js";
+import categoryRoutes from "./routes/categoryRoute.js"
+import businessListRoutes from "./routes/businessListRoute.js"
 
 dotenv.config();
 
@@ -23,6 +25,8 @@ app.use(userRoutes);
 app.use(oauthRoutes);
 app.use(userClientRoutes);
 app.use(locationRoutes);
+app.use(categoryRoutes);
+app.use(businessListRoutes);
 
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Database Connected ✅'))

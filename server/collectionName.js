@@ -3,7 +3,9 @@ export const Collections = {
     OAUTHUSERS: 'oauthusers',
     CLIENT: 'clients',
     USERCLIENT: 'userclient',
-    LOCATION: 'location'
+    LOCATION: 'location',
+    CATEGORY: 'category',
+    BUSINESSLIST: 'businesslist'
 };
 
 export const {
@@ -11,5 +13,7 @@ export const {
     OAUTHUSERS,
     CLIENT,
     USERCLIENT,
-    LOCATION
+    LOCATION,
+    CATEGORY,
+    BUSINESSLIST
 }= Collections;

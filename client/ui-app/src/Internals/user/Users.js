@@ -55,13 +55,13 @@ export default function User() {
       })
       .catch((err) => console.error("Create user failed:", err));
   };
-const handleEdit = (row) => {
-  console.log("Edit row:", row);
-};
+  const handleEdit = (row) => {
+    console.log("Edit row:", row);
+  };
 
-const handleDelete = (row) => {
-  console.log("Delete row:", row);
-};
+  const handleDelete = (row) => {
+    console.log("Delete row:", row);
+  };
   const rows = users.map((user, index) => ({
     id: user._id || index,
     userName: user.userName,
@@ -71,38 +71,38 @@ const handleDelete = (row) => {
     businessCategory: user.businessCategory || "-",
   }));
 
-const userList = [
-  { field: "userName", headerName: "User Name", flex: 1 },
-  { field: "emailId", headerName: "Email", flex: 1 },
-  { field: "role", headerName: "Role", flex: 1 },
-  { field: "businessLocation", headerName: "Business Location", flex: 1 },
-  { field: "businessCategory", headerName: "Business Category", flex: 1 },
-  {
-    field: "action",
-    headerName: "Action",
-    flex: 1,
-    sortable: false,
-    filterable: false,
-    renderCell: (params) => (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <IconButton
-          color="primary"
-          size="small"
-          onClick={() => handleEdit(params.row)}
-        >
-          <EditRoundedIcon fontSize="small" />
-        </IconButton>
-        <IconButton
-          color="error"
-          size="small"
-          onClick={() => handleDelete(params.row)}
-        >
-          <DeleteOutlineRoundedIcon fontSize="small" />
-        </IconButton>
-      </div>
-    ),
-  },
-];
+  const userList = [
+    { field: "userName", headerName: "User Name", flex: 1 },
+    { field: "emailId", headerName: "Email", flex: 1 },
+    { field: "role", headerName: "Role", flex: 1 },
+    { field: "businessLocation", headerName: "Business Location", flex: 1 },
+    { field: "businessCategory", headerName: "Business Category", flex: 1 },
+    {
+      field: "action",
+      headerName: "Action",
+      flex: 1,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={() => handleEdit(params.row)}
+          >
+            <EditRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            color="error"
+            size="small"
+            onClick={() => handleDelete(params.row)}
+          >
+            <DeleteOutlineRoundedIcon fontSize="small" />
+          </IconButton>
+        </div>
+      ),
+    },
+  ];
 
   const fields = [
     { label: "UserName", name: "userName", required: true, type: "text" },
@@ -133,7 +133,7 @@ const userList = [
                   fullWidth
                   type={field.type}
                   label={field.label}
-                  name={field.name} 
+                  name={field.name}
                   variant="standard"
                   value={formData[field.name]}
                   onChange={handleChange}
@@ -153,15 +153,15 @@ const userList = [
               <Box
                 sx={{
                   display: 'flex',
-                  justifyContent: { xs: 'flex-end', sm: 'flex-start' }, 
-                  mt: 4, 
+                  justifyContent: { xs: 'flex-end', sm: 'flex-start' },
+                  mt: 4,
                 }}
               >
                 <Button
                   type="submit"
                   variant="contained"
                   disabled={loading}
-                  sx={{ minWidth: 150 }} 
+                  sx={{ minWidth: 150 }}
                 >
                   {loading ? <CircularProgress size={24} /> : "Create User"}
                 </Button>

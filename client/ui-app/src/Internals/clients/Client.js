@@ -103,7 +103,6 @@ export default function UserClients() {
   ];
 
   const fields = [
-    { label: "Client Id", name: "clientId", required: true, type: "text" },
     { label: "Name", name: "name", required: true, type: "text" },
     { label: "Contact", name: "contact", required: true, type: "text" },
     { label: "EmailId", name: "emailId", required: true, type: "email" },
