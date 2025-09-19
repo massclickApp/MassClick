@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList, createBusinessList } from "../../redux/actions/businessListAction";
 import { getAllLocation } from "../../redux/actions/locationAction";
+import { getAllCategory } from "../../redux/actions/categoryAction";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -30,7 +31,9 @@ export default function Category() {
     const { location = [] } = useSelector(
         (state) => state.locationReducer || {}
     );
-    console.log("location", location)
+     const { category = [] } = useSelector(
+        (state) => state.categoryReducer || {}
+      );
     const fileInputRef = useRef();
     const [businessvalue, setBusinessValue] = useState('');
 
@@ -96,7 +99,7 @@ export default function Category() {
     useEffect(() => {
         dispatch(getAllBusinessList());
         dispatch(getAllLocation());
-
+        dispatch(getAllCategory())
     }, [dispatch]);
 
     const handleChange = (e) => {
@@ -263,7 +266,6 @@ export default function Category() {
                         {/* Client ID */}
                         <Grid item xs={12} sm={4}>
                             <TextField
-                                required
                                 fullWidth
                                 label="Client ID"
                                 name="clientId"
@@ -445,7 +447,7 @@ export default function Category() {
                         {/* Category */}
                         <Grid item xs={12} sm={4}>
                             <TextField
-                                required
+                                select
                                 fullWidth
                                 label="Category"
                                 name="category"
@@ -454,7 +456,14 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
-                            />
+                            >
+
+                                     {category.map((cat) => (
+                                    <MenuItem key={cat._id} value={cat.category}>
+                                        {cat.category}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
                         </Grid>
 
                         {/* Google Map */}

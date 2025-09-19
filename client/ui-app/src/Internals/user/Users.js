@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllUsers, createUser } from "../../redux/actions/userAction.js";
+import { getAllUsers, createUser, editUser, deleteUser } from "../../redux/actions/userAction.js";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
 import {
   Box,
@@ -21,6 +21,9 @@ export default function User() {
   const { users = [], loading, error } = useSelector(
     (state) => state.userReducer || {}
   );
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editUserId, setEditUserId] = useState(null);
+
   const [formData, setFormData] = useState({
     userName: "",
     contact: "",
@@ -41,30 +44,66 @@ export default function User() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(createUser(formData))
-      .then(() => {
-        setFormData({
-          userName: "",
-          contact: "",
-          businessLocation: "",
-          businessCategory: "",
-          emailId: "",
-          role: "",
-        });
-        dispatch(getAllUsers());
-      })
-      .catch((err) => console.error("Create user failed:", err));
-  };
-  const handleEdit = (row) => {
-    console.log("Edit row:", row);
+
+    if (isEditMode && editUserId) {
+      dispatch(editUser(editUserId, formData))
+        .then(() => {
+          setFormData({
+            userName: "",
+            contact: "",
+            businessLocation: "",
+            businessCategory: "",
+            emailId: "",
+            role: "",
+          });
+          setIsEditMode(false);
+          setEditUserId(null);
+          dispatch(getAllUsers());
+        })
+        .catch((err) => console.error("Update user failed:", err));
+    } else {
+      dispatch(createUser(formData))
+        .then(() => {
+          setFormData({
+            userName: "",
+            contact: "",
+            businessLocation: "",
+            businessCategory: "",
+            emailId: "",
+            role: "",
+          });
+          dispatch(getAllUsers());
+        })
+        .catch((err) => console.error("Create user failed:", err));
+    }
   };
 
-  const handleDelete = (row) => {
-    console.log("Delete row:", row);
+  const handleEdit = (row) => {
+    setFormData({
+      userName: row.userName,
+      contact: row.contact,
+      role: row.role,
+      emailId: row.emailId,
+      businessLocation: row.businessLocation,
+      businessCategory: row.businessCategory,
+    });
+    setEditUserId(row.id);
+    setIsEditMode(true);
   };
+
+
+  const handleDelete = (row) => {
+    if (window.confirm(`Are you sure you want to delete ${row.userName}?`)) {
+      dispatch(deleteUser(row.id))
+        .then(() => dispatch(getAllUsers()))
+        .catch((err) => console.error("Delete failed:", err));
+    }
+  };
+
   const rows = users.map((user, index) => ({
     id: user._id || index,
     userName: user.userName,
+    contact: user.contact, 
     emailId: user.emailId,
     role: user.role,
     businessLocation: user.businessLocation || "-",
@@ -163,7 +202,7 @@ export default function User() {
                   disabled={loading}
                   sx={{ minWidth: 150 }}
                 >
-                  {loading ? <CircularProgress size={24} /> : "Create User"}
+                  {loading ? <CircularProgress size={24} /> : isEditMode ? "Update User" : "Create User"}
                 </Button>
               </Box>
             </Grid>

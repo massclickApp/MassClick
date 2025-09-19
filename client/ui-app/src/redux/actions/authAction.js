@@ -1,17 +1,20 @@
 import axios from 'axios';
-import qs from 'qs'; 
+import qs from 'qs';
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'LOGIN_FAILURE';
+
+export const RELOGIN_REQUEST = "RELOGIN_REQUEST";
+export const RELOGIN_SUCCESS = "RELOGIN_SUCCESS";
+export const RELOGIN_FAILURE = "RELOGIN_FAILURE";
+
 export const LOGOUT = 'LOGOUT';
 
 const API_URL = process.env.REACT_APP_API_URL;
 const CLIENT_ID = process.env.REACT_APP_OAUTH_CLIENT_ID;
-const CLIENT_SECRET = process.env.REACT_APP_OAUTH_CLIENT_SECRET; 
-console.log("API_URL",API_URL)
-console.log("CLIENT_ID",CLIENT_ID)
-console.log("CLIENT_SECRET",CLIENT_SECRET)
+const CLIENT_SECRET = process.env.REACT_APP_OAUTH_CLIENT_SECRET;
+
 
 export const login = (username, password) => async (dispatch) => {
   dispatch({ type: LOGIN_REQUEST });
@@ -25,9 +28,9 @@ export const login = (username, password) => async (dispatch) => {
       password,
     });
 
-  const response = await axios.post(`${API_URL}/oauth/login`, data, {
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-});
+    const response = await axios.post(`${API_URL}/oauth/login`, data, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
 
 
     const { accessToken, refreshToken, user } = response.data;
@@ -45,6 +48,32 @@ export const login = (username, password) => async (dispatch) => {
       type: LOGIN_FAILURE,
       payload: error.response?.data || error.message,
     });
+  }
+};
+
+export const relogin = () => async (dispatch) => {
+  dispatch({ type: RELOGIN_REQUEST });
+  try {
+    const refreshToken = localStorage.getItem('refreshToken');
+    const response = await axios.post(`${API_URL}/oauth/relogin`, { refreshToken });
+
+    const { accessToken, refreshToken: newRefreshToken, user } = response.data;
+
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', newRefreshToken);
+
+    dispatch({
+      type: RELOGIN_SUCCESS,
+      payload: { accessToken, refreshToken: newRefreshToken, user },
+    });
+
+    return response.data;
+  } catch (error) {
+    dispatch({
+      type: RELOGIN_FAILURE,
+      payload: error.response?.data || error.message,
+    });
+    throw error;
   }
 };
 
