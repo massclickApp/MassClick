@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllLocation, createLocation } from "../../redux/actions/locationAction.js";
+import {
+    getAllLocation,
+    createLocation,
+    editLocation,
+    deleteLocation,
+} from "../../redux/actions/locationAction.js";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
 import {
     Box,
@@ -11,17 +16,16 @@ import {
     TextField,
     Typography,
     CircularProgress,
-    IconButton
+    IconButton,
 } from "@mui/material";
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 
 export default function Location() {
     const dispatch = useDispatch();
     const { location = [], loading, error } = useSelector(
         (state) => state.locationReducer || {}
     );
-
 
     const [formData, setFormData] = useState({
         country: "",
@@ -33,6 +37,8 @@ export default function Location() {
         addressLine2: "",
     });
 
+    const [editingId, setEditingId] = useState(null); 
+
     useEffect(() => {
         dispatch(getAllLocation());
     }, [dispatch]);
@@ -42,41 +48,70 @@ export default function Location() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const resetForm = () => {
+        setFormData({
+            country: "",
+            state: "",
+            district: "",
+            city: "",
+            pincode: "",
+            addressLine1: "",
+            addressLine2: "",
+        });
+        setEditingId(null);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(createLocation(formData))
-            .then(() => {
-                setFormData({
-                    country: "",
-                    state: "",
-                    district: "",
-                    city: "",
-                    pincode: "",
-                    addressLine1: "",
-                    addressLine2: "",
-
-                });
-                dispatch(getAllLocation());
-            })
-            .catch((err) => console.error("Create location failed:", err));
+        if (editingId) {
+            dispatch(editLocation(editingId, formData))
+                .then(() => {
+                    resetForm();
+                    dispatch(getAllLocation());
+                })
+                .catch((err) => console.error("Update location failed:", err));
+        } else {
+            dispatch(createLocation(formData))
+                .then(() => {
+                    resetForm();
+                    dispatch(getAllLocation());
+                })
+                .catch((err) => console.error("Create location failed:", err));
+        }
     };
+
     const handleEdit = (row) => {
-        console.log("Edit row:", row);
+        setEditingId(row.id);
+        setFormData({
+            country: row.country || "",
+            state: row.state || "",
+            district: row.district || "",
+            city: row.city || "",
+            pincode: row.pincode || "",
+            addressLine1: row.addressLine1 || "",
+            addressLine2: row.addressLine2 || "",
+        });
     };
 
     const handleDelete = (row) => {
-        console.log("Delete row:", row);
+        if (window.confirm("Are you sure you want to delete this location?")) {
+            dispatch(deleteLocation(row.id))
+                .then(() => {
+                    dispatch(getAllLocation());
+                })
+                .catch((err) => console.error("Delete location failed:", err));
+        }
     };
-    const rows = location.map((location, index) => ({
-        id: location._id || index,
-        country: location.country,
-        state: location.state,
-        district: location.district,
-        city: location.city,
-        pincode: location.pincode || "-",
-        addressLine1: location.addressLine1 || "-",
-        addressLine2: location.addressLine2 || "-",
 
+    const rows = location.map((loc, index) => ({
+        id: loc._id || index,
+        country: loc.country,
+        state: loc.state,
+        district: loc.district,
+        city: loc.city,
+        pincode: loc.pincode || "-",
+        addressLine1: loc.addressLine1 || "-",
+        addressLine2: loc.addressLine2 || "-",
     }));
 
     const locationList = [
@@ -122,24 +157,18 @@ export default function Location() {
         { label: "PinCode", name: "pincode", required: true, type: "text" },
         { label: "AddressLine1", name: "addressLine1", required: true, type: "text" },
         { label: "AddressLine2", name: "addressLine2", required: true, type: "text" },
-
     ];
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
                 <Typography variant="h6" gutterBottom>
-                    Add New Location
+                    {editingId ? "Edit Location" : "Add New Location"}
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         {fields.map((field, i) => (
-                            <Grid
-                                item
-                                xs={12}
-                                // sm={field.name === "userName" || field.name === "contact" ? 6 : 12}
-                                key={i}
-                            >
+                            <Grid item xs={12} key={i}>
                                 <TextField
                                     required={field.required}
                                     fullWidth
@@ -164,8 +193,9 @@ export default function Location() {
                         <Grid item xs={12}>
                             <Box
                                 sx={{
-                                    display: 'flex',
-                                    justifyContent: { xs: 'flex-end', sm: 'flex-start' },
+                                    display: "flex",
+                                    gap: 2,
+                                    justifyContent: { xs: "flex-end", sm: "flex-start" },
                                     mt: 4,
                                 }}
                             >
@@ -175,8 +205,19 @@ export default function Location() {
                                     disabled={loading}
                                     sx={{ minWidth: 150 }}
                                 >
-                                    {loading ? <CircularProgress size={24} /> : "Create Location"}
+                                    {loading ? (
+                                        <CircularProgress size={24} />
+                                    ) : editingId ? (
+                                        "Update Location"
+                                    ) : (
+                                        "Create Location"
+                                    )}
                                 </Button>
+                                {editingId && (
+                                    <Button variant="outlined" color="secondary" onClick={resetForm}>
+                                        Cancel
+                                    </Button>
+                                )}
                             </Box>
                         </Grid>
                     </Grid>

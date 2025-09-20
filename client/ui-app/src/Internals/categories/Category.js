@@ -1,6 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllCategory, createCategory } from "../../redux/actions/categoryAction";
+import {
+  getAllCategory,
+  createCategory,
+  editCategory,
+  deleteCategory,
+} from "../../redux/actions/categoryAction";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
 import {
   Box,
@@ -13,14 +18,18 @@ import {
   CircularProgress,
   IconButton,
   Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import Input from '@mui/material/Input';
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import Input from "@mui/material/Input";
 
 export default function Category() {
   const dispatch = useDispatch();
@@ -30,6 +39,7 @@ export default function Category() {
   const fileInputRef = useRef();
 
   const [formData, setFormData] = useState({
+    _id: null,
     categoryImage: "",
     category: "",
     categoryType: "",
@@ -40,16 +50,14 @@ export default function Category() {
   });
 
   const [preview, setPreview] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, id: null });
 
   const textFieldStyle = {
-    "& .MuiInputBase-root": {
-      height: 50,
-      fontSize: "1.1rem",
-    },
-    "& .MuiInputLabel-root": {
-      fontSize: "1rem",
-    },
+    "& .MuiInputBase-root": { height: 50, fontSize: "1.1rem" },
+    "& .MuiInputLabel-root": { fontSize: "1rem" },
   };
+
   const subCategories = [
     "Services", "Construction Company", "Travels", "Restaurants", "Medical",
     "Events", "Education", "Garments", "Hotels", "Spa", "Real Estate",
@@ -57,11 +65,7 @@ export default function Category() {
     "Manufacturer", "Hostels"
   ];
 
-
-  const menuItemStyle = {
-    fontSize: "1rem",
-    height: "40px",
-  };
+  const menuItemStyle = { fontSize: "1rem", height: "40px" };
 
   useEffect(() => {
     dispatch(getAllCategory());
@@ -73,11 +77,22 @@ export default function Category() {
   };
 
   const handleEdit = (row) => {
-    console.log("Edit row:", row);
+    setEditMode(true);
+    setFormData(row);
+    setPreview(row.categoryImage || null);
   };
 
   const handleDelete = (row) => {
-    console.log("Delete row:", row);
+    setDeleteConfirm({ open: true, id: row.id });
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirm.id) {
+      dispatch(deleteCategory(deleteConfirm.id))
+        .then(() => dispatch(getAllCategory()))
+        .catch((err) => console.error("Delete failed:", err))
+        .finally(() => setDeleteConfirm({ open: false, id: null }));
+    }
   };
 
   const handleImageChange = (e) => {
@@ -103,9 +118,14 @@ export default function Category() {
       return;
     }
 
-    dispatch(createCategory(formData))
+    const action = editMode
+      ? editCategory(formData._id, formData)
+      : createCategory(formData);
+
+    dispatch(action)
       .then(() => {
         setFormData({
+          _id: null,
           categoryImage: "",
           category: "",
           categoryType: "",
@@ -115,6 +135,7 @@ export default function Category() {
           description: "",
         });
         setPreview(null);
+        setEditMode(false);
 
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -122,12 +143,14 @@ export default function Category() {
 
         dispatch(getAllCategory());
       })
-
-      .catch((err) => console.error("Create category failed:", err));
+      .catch((err) =>
+        console.error(editMode ? "Update category failed:" : "Create category failed:", err)
+      );
   };
 
   const rows = category.map((cat, index) => ({
     id: cat._id || index,
+    _id: cat._id,
     categoryImage: cat.categoryImage,
     category: cat.category,
     categoryType: cat.categoryType,
@@ -143,7 +166,7 @@ export default function Category() {
       headerName: "Category Image",
       flex: 1,
       renderCell: (params) =>
-        params.value ? <Avatar src={params.value} alt="img" /> : "-"
+        params.value ? <Avatar src={params.value} alt="img" /> : "-",
     },
     { field: "category", headerName: "Category", flex: 1 },
     { field: "categoryType", headerName: "Category Type", flex: 1 },
@@ -182,7 +205,7 @@ export default function Category() {
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
         <Typography variant="h6" gutterBottom>
-          Add New Category
+          {editMode ? "Edit Category" : "Add New Category"}
         </Typography>
         <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={6}>
@@ -200,7 +223,13 @@ export default function Category() {
               />
             </Grid>
 
-            <FormControl variant="standard" sx={textFieldStyle} style={{ minWidth: 220 }} required>
+            {/* Category Type */}
+            <FormControl
+              variant="standard"
+              sx={textFieldStyle}
+              style={{ minWidth: 220 }}
+              required
+            >
               <InputLabel id="category-type-label">Category Type</InputLabel>
               <Select
                 labelId="category-type-label"
@@ -222,15 +251,26 @@ export default function Category() {
               </Select>
             </FormControl>
 
+            {/* Sub Category Type */}
             {formData.categoryType === "Sub Category" && (
               <Grid item xs={12} sm={4}>
-                <FormControl variant="standard" sx={textFieldStyle} style={{ minWidth: 220 }} required>
-                  <InputLabel id="sub-category-type-label">Sub Category Type</InputLabel>
+                <FormControl
+                  variant="standard"
+                  sx={textFieldStyle}
+                  style={{ minWidth: 220 }}
+                  required
+                >
+                  <InputLabel id="sub-category-type-label">
+                    Sub Category Type
+                  </InputLabel>
                   <Select
                     labelId="sub-category-type-label"
                     value={formData.subCategoryType}
                     onChange={(event) =>
-                      setFormData({ ...formData, subCategoryType: event.target.value })
+                      setFormData({
+                        ...formData,
+                        subCategoryType: event.target.value,
+                      })
                     }
                     input={<Input />}
                   >
@@ -243,7 +283,6 @@ export default function Category() {
                 </FormControl>
               </Grid>
             )}
-
 
             {/* Title Field */}
             <Grid item xs={12} sm={4}>
@@ -289,7 +328,7 @@ export default function Category() {
 
             {/* Image Upload Field */}
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <TextField
                   fullWidth
                   type="file"
@@ -300,33 +339,29 @@ export default function Category() {
                   variant="standard"
                   sx={textFieldStyle}
                   inputRef={fileInputRef}
-
                 />
                 {preview && (
-                  <Avatar
-                    src={preview}
-                    sx={{ width: 56, height: 56 }}
-                  />
+                  <Avatar src={preview} sx={{ width: 56, height: 56 }} />
                 )}
               </Box>
             </Grid>
 
             {/* Submit Button */}
             <Grid item xs={12}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: "flex-end",
-                  mt: 4,
-                }}
-              >
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
                 <Button
                   type="submit"
                   variant="contained"
                   disabled={loading}
                   sx={{ minWidth: 150 }}
                 >
-                  {loading ? <CircularProgress size={24} /> : "Create Category"}
+                  {loading ? (
+                    <CircularProgress size={24} />
+                  ) : editMode ? (
+                    "Update Category"
+                  ) : (
+                    "Create Category"
+                  )}
                 </Button>
               </Box>
             </Grid>
@@ -334,7 +369,9 @@ export default function Category() {
         </Box>
         {error && (
           <Typography color="error" sx={{ mt: 2 }}>
-            {typeof error === "string" ? error : error.message || JSON.stringify(error)}
+            {typeof error === "string"
+              ? error
+              : error.message || JSON.stringify(error)}
           </Typography>
         )}
       </Paper>
@@ -348,6 +385,25 @@ export default function Category() {
           <CustomizedDataGrid rows={rows} columns={categoryList} />
         </Box>
       </Paper>
+
+      {/* Delete Confirm Dialog */}
+      <Dialog
+        open={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, id: null })}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this category?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirm({ open: false, id: null })}>
+            Cancel
+          </Button>
+          <Button color="error" onClick={confirmDelete}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

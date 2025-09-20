@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList, createBusinessList } from "../../redux/actions/businessListAction";
+import { getAllBusinessList, createBusinessList, editBusinessList, deleteBusinessList } from "../../redux/actions/businessListAction";
 import { getAllLocation } from "../../redux/actions/locationAction";
 import { getAllCategory } from "../../redux/actions/categoryAction";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
@@ -18,7 +18,11 @@ import {
     CircularProgress,
     IconButton,
     Avatar,
-    MenuItem
+    MenuItem,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
@@ -28,14 +32,13 @@ export default function Category() {
     const { businessList = [], loading, error } = useSelector(
         (state) => state.businessListReducer || {}
     );
-    const { location = [] } = useSelector(
-        (state) => state.locationReducer || {}
-    );
-     const { category = [] } = useSelector(
-        (state) => state.categoryReducer || {}
-      );
+    const { location = [] } = useSelector((state) => state.locationReducer || {});
+    const { category = [] } = useSelector((state) => state.categoryReducer || {});
     const fileInputRef = useRef();
-    const [businessvalue, setBusinessValue] = useState('');
+
+    const [businessvalue, setBusinessValue] = useState("");
+    const [editMode, setEditMode] = useState(false);
+    const [editId, setEditId] = useState(null);
 
     const [formData, setFormData] = useState({
         clientId: "",
@@ -64,7 +67,10 @@ export default function Category() {
     });
 
     const [preview, setPreview] = useState(null);
-
+    const [deleteDialog, setDeleteDialog] = useState({
+        open: false,
+        id: null,
+    });
     const textFieldStyle = {
         "& .MuiInputBase-root": {
             height: 50,
@@ -86,10 +92,16 @@ export default function Category() {
     };
 
     const formats = [
-        'header',
-        'bold', 'italic', 'underline', 'strike',
-        'list', 'bullet',
-        'link', 'image', 'video'
+        "header",
+        "bold",
+        "italic",
+        "underline",
+        "strike",
+        "list",
+        "bullet",
+        "link",
+        "image",
+        "video",
     ];
     const handleBusinessChange = (content) => {
         setBusinessValue(content);
@@ -108,13 +120,57 @@ export default function Category() {
     };
 
     const handleEdit = (row) => {
-        console.log("Edit row:", row);
+        setEditMode(true);
+        setEditId(row.id);
+        setFormData({ ...row });
+        setBusinessValue(row.businessDetails || "");
+        setPreview(row.bannerImage || null);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     const handleDelete = (row) => {
-        console.log("Delete row:", row);
+        setDeleteDialog({ open: true, id: row.id });
     };
-
+    const confirmDelete = () => {
+        if (deleteDialog.id) {
+            dispatch(deleteBusinessList(deleteDialog.id)).then(() => {
+                dispatch(getAllBusinessList());
+            });
+        }
+        setDeleteDialog({ open: false, id: null });
+    };
+    const resetForm = () => {
+        setFormData({
+            clientId: "",
+            businessName: "",
+            plotNumber: "",
+            street: "",
+            pincode: "",
+            email: "",
+            contact: "",
+            contactList: "",
+            gstin: "",
+            whatsappNumber: "",
+            experience: "",
+            location: "",
+            category: "",
+            bannerImage: "",
+            googleMap: "",
+            website: "",
+            facebook: "",
+            instagram: "",
+            youtube: "",
+            pinterest: "",
+            twitter: "",
+            linkedin: "",
+            businessDetails: "",
+        });
+        setBusinessValue("");
+        setPreview(null);
+        setEditMode(false);
+        setEditId(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -129,42 +185,23 @@ export default function Category() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         const payload = { ...formData, businessDetails: businessvalue };
 
-        dispatch(createBusinessList(payload))
-            .then(() => {
-                setFormData({
-                    clientId: "",
-                    businessName: "",
-                    plotNumber: "",
-                    street: "",
-                    pincode: "",
-                    email: "",
-                    contact: "",
-                    contactList: "",
-                    gstin: "",
-                    whatsappNumber: "",
-                    experience: "",
-                    location: "",
-                    category: "",
-                    bannerImage: "",
-                    googleMap: "",
-                    website: "",
-                    facebook: "",
-                    instagram: "",
-                    youtube: "",
-                    pinterest: "",
-                    twitter: "",
-                    linkedin: "",
-                    businessDetails: "",
-                });
-                setBusinessValue("");
-                setPreview(null);
-                if (fileInputRef.current) fileInputRef.current.value = "";
-                dispatch(getAllBusinessList());
-            })
-            .catch((err) => console.error("Create BusinessList failed:", err));
+        if (editMode && editId) {
+            dispatch(editBusinessList(editId, payload))
+                .then(() => {
+                    resetForm();
+                    dispatch(getAllBusinessList());
+                })
+                .catch((err) => console.error("Edit failed:", err));
+        } else {
+            dispatch(createBusinessList(payload))
+                .then(() => {
+                    resetForm();
+                    dispatch(getAllBusinessList());
+                })
+                .catch((err) => console.error("Create failed:", err));
+        }
     };
 
 
@@ -259,7 +296,7 @@ export default function Category() {
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
                 <Typography variant="h6" gutterBottom>
-                    Add New Business
+                    {editMode ? "Edit Business" : "Add New Business"}
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit}>
                     <Grid container spacing={8}>
@@ -458,7 +495,7 @@ export default function Category() {
                                 style={{ minWidth: 260 }}
                             >
 
-                                     {category.map((cat) => (
+                                {category.map((cat) => (
                                     <MenuItem key={cat._id} value={cat.category}>
                                         {cat.category}
                                     </MenuItem>
@@ -616,20 +653,30 @@ export default function Category() {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                mt: 10,
-                            }}
-                        >
+                        <Box sx={{ display: "flex", mt: 10, gap: 2 }}>
                             <Button
                                 type="submit"
                                 variant="contained"
                                 disabled={loading}
                                 sx={{ minWidth: 150 }}
                             >
-                                {loading ? <CircularProgress size={24} /> : "Create Business"}
+                                {loading ? (
+                                    <CircularProgress size={24} />
+                                ) : editMode ? (
+                                    "Update Business"
+                                ) : (
+                                    "Create Business"
+                                )}
                             </Button>
+                            {editMode && (
+                                <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    onClick={resetForm}
+                                >
+                                    Cancel
+                                </Button>
+                            )}
                         </Box>
                     </Grid>
                 </Box>
@@ -649,6 +696,23 @@ export default function Category() {
                     <CustomizedDataGrid rows={rows} columns={businessListTable} />
                 </Box>
             </Paper>
+            <Dialog
+                open={deleteDialog.open}
+                onClose={() => setDeleteDialog({ open: false, id: null })}
+            >
+                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogContent>
+                    Are you sure you want to delete this business?
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialog({ open: false, id: null })}>
+                        Cancel
+                    </Button>
+                    <Button color="error" onClick={confirmDelete}>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }

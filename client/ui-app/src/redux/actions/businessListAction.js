@@ -1,7 +1,9 @@
 import axios from "axios";
 import {
   FETCH_BUSINESS_REQUEST, FETCH_BUSINESS_SUCCESS, FETCH_BUSINESS_FAILURE,
-  CREATE_BUSINESS_REQUEST, CREATE_BUSINESS_SUCCESS, CREATE_BUSINESS_FAILURE
+  CREATE_BUSINESS_REQUEST, CREATE_BUSINESS_SUCCESS, CREATE_BUSINESS_FAILURE,
+  EDIT_BUSINESS_REQUEST, EDIT_BUSINESS_SUCCESS, EDIT_BUSINESS_FAILURE,
+  DELETE_BUSINESS_REQUEST, DELETE_BUSINESS_SUCCESS, DELETE_BUSINESS_FAILURE
 } from "../actions/userActionTypes.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -54,3 +56,33 @@ export const createBusinessList = (businessListData) => async (dispatch) => {
   }
 };
 
+export const editBusinessList = (id, businessData) => async (dispatch) => {
+  dispatch({ type: EDIT_BUSINESS_REQUEST });
+  try {
+    const token = localStorage.getItem("accessToken");
+    const response = await axios.put(`${API_URL}/businesslist/update/${id}`, businessData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const updatedBusinessList = response.data;
+    dispatch({ type: EDIT_BUSINESS_SUCCESS, payload: updatedBusinessList });
+    return updatedBusinessList;
+  } catch (error) {
+    dispatch({ type: EDIT_BUSINESS_FAILURE, payload: error.response?.data || error.message });
+    throw error;
+  }
+};
+
+
+export const deleteBusinessList = (id) => async (dispatch) => {
+  dispatch({ type: DELETE_BUSINESS_REQUEST });
+  try {
+    const token = localStorage.getItem("accessToken");
+    await axios.delete(`${API_URL}/businesslist/delete/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    dispatch({ type: DELETE_BUSINESS_SUCCESS, payload: id });
+  } catch (error) {
+    dispatch({ type: DELETE_BUSINESS_FAILURE, payload: error.response?.data || error.message });
+    throw error;
+  }
+};

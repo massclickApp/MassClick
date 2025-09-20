@@ -1,7 +1,9 @@
 import axios from "axios";
 import {
   FETCH_LOCATION_REQUEST, FETCH_LOCATION_SUCCESS, FETCH_LOCATION_FAILURE,
-  CREATE_LOCATION_REQUEST, CREATE_LOCATION_SUCCESS, CREATE_LOCATION_FAILURE
+  CREATE_LOCATION_REQUEST, CREATE_LOCATION_SUCCESS, CREATE_LOCATION_FAILURE,
+  EDIT_LOCATION_REQUEST, EDIT_LOCATION_SUCCESS, EDIT_LOCATION_FAILURE,
+  DELETE_LOCATION_REQUEST, DELETE_LOCATION_SUCCESS, DELETE_LOCATION_FAILURE
 } from "../actions/userActionTypes.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -54,3 +56,33 @@ export const createLocation = (userData) => async (dispatch) => {
   }
 };
 
+export const editLocation = (id, locationData) => async (dispatch) => {
+  dispatch({ type: EDIT_LOCATION_REQUEST });
+  try {
+    const token = localStorage.getItem("accessToken");
+    const response = await axios.put(`${API_URL}/location/update/${id}`, locationData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const updatedLocation = response.data;
+    dispatch({ type: EDIT_LOCATION_SUCCESS, payload: updatedLocation });
+    return updatedLocation;
+  } catch (error) {
+    dispatch({ type: EDIT_LOCATION_FAILURE, payload: error.response?.data || error.message });
+    throw error;
+  }
+};
+
+
+export const deleteLocation = (id) => async (dispatch) => {
+  dispatch({ type: DELETE_LOCATION_REQUEST });
+  try {
+    const token = localStorage.getItem("accessToken");
+    await axios.delete(`${API_URL}/location/delete/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    dispatch({ type: DELETE_LOCATION_SUCCESS, payload: id });
+  } catch (error) {
+    dispatch({ type: DELETE_LOCATION_FAILURE, payload: error.response?.data || error.message });
+    throw error;
+  }
+};
