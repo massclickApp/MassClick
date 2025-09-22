@@ -13,23 +13,25 @@ import MenuButton from './MenuButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../redux/actions/authAction.js';
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import Box from '@mui/material/Box'; // add this
 
 const MenuItem = styled(MuiMenuItem)({
   margin: '2px 0',
 });
 
 export default function OptionsMenu() {
-  const [anchorEl, setAnchorEl] = React.useState(null); 
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
-const handleLogout = () => {
-  const id = user?.userId?.$oid;  
-  dispatch(logout(id));
-  navigate("/");  
-};
+  const handleLogout = () => {
+    const id = user?.userId?.$oid;
+    dispatch(logout(id));
+    navigate("/");
+  };
 
 
   const handleClick = (event) => {
@@ -45,10 +47,25 @@ const handleLogout = () => {
       <MenuButton
         aria-label="Open menu"
         onClick={handleClick}
-        sx={{ borderColor: 'transparent' }}
+        sx={{ borderColor: 'transparent', p: 0 }}
       >
-        <MoreVertRoundedIcon />
+        <Box
+          sx={{
+            width: 40,          // increase size
+            height: 40,
+            borderRadius: '50%', // make it fully circular
+            overflow: 'hidden',  // ensure rounded shape
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#fff', // optional: add a background
+            boxShadow: '0 2px 6px rgba(0,0,0,0.2)', // optional: subtle shadow
+          }}
+        >
+          <AccountCircleRoundedIcon sx={{ width: 40, height: 40, }} />
+        </Box>
       </MenuButton>
+
       <Menu
         anchorEl={anchorEl}
         id="menu"
@@ -69,20 +86,20 @@ const handleLogout = () => {
         <MenuItem onClick={handleClose}>Add another account</MenuItem>
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <Divider />
-    <MenuItem
-  onClick={() => {
-    handleLogout();
-    handleClose();
-  }}
-  sx={{
-    [`& .${listItemIconClasses.root}`]: { ml: 'auto', minWidth: 0 },
-  }}
->
-  <ListItemText>Logout</ListItemText>
-  <ListItemIcon>
-    <LogoutRoundedIcon fontSize="small" />
-  </ListItemIcon>
-</MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleLogout();
+            handleClose();
+          }}
+          sx={{
+            [`& .${listItemIconClasses.root}`]: { ml: 'auto', minWidth: 0 },
+          }}
+        >
+          <ListItemText>Logout</ListItemText>
+          <ListItemIcon>
+            <LogoutRoundedIcon fontSize="small" />
+          </ListItemIcon>
+        </MenuItem>
 
       </Menu>
     </React.Fragment>

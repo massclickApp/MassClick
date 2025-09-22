@@ -6,6 +6,7 @@ import NavbarBreadcrumbs from './NavbarBreadCrump.js';
 import MenuButton from './MenuButton';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 import Search from './Search';
+import OptionsMenu from './OptionsMenu.js';
 
 export default function Header() {
   return (
@@ -31,7 +32,7 @@ export default function Header() {
         <MenuButton showBadge aria-label="Open notifications">
           <NotificationsRoundedIcon />
         </MenuButton>
-        <ColorModeIconDropdown />
+        <OptionsMenu />
       </Stack>
     </Stack>
   );
