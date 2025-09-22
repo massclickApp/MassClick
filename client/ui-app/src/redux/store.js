@@ -6,6 +6,7 @@ import userClientReducer from './reducers/userClientReducer'
 import locationReducer from './reducers/locationReducer.js'
 import categoryReducer from './reducers/categoryReducer.js'
 import businessListReducer from './reducers/businessListReducer.js'
+import rolesReducer from './reducers/rolesReducer.js';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
     locationReducer: locationReducer,
     categoryReducer: categoryReducer,
     businessListReducer: businessListReducer,
+    rolesReducer: rolesReducer
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));

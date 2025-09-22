@@ -6,7 +6,7 @@ import User from './Internals/user/Users.js';
 import Clients from './Internals/clients/Client.js';
 import Business from './Internals/business/Business.js';
 import Category from './Internals/categories/Category.js';
-import Tasks from './Internals/Task/Tasks.js';
+import Roles from './Internals/Roles/Roles.js';
 import Location from './Internals/location/Location.js';
 import MainGrid from './components/MainGrid.js';
 
@@ -23,7 +23,7 @@ function App() {
           <Route path="business" element={<Business />} />
           <Route path="category" element={<Category />} />
           <Route path="location" element={<Location />} />
-          <Route path="tasks" element={<Tasks />} />
+          <Route path="roles" element={<Roles />} />
         </Route>
       </Routes>
     </Router>

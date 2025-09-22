@@ -12,15 +12,21 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
 import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
 import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
+import CategoryIcon from '@mui/icons-material/Category';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import BusinessIcon from '@mui/icons-material/Business';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const mainListItems = [
   { text: 'Home', icon: <HomeRoundedIcon />, path: '/dashboard/home' },
-  { text: 'Category', icon: <AnalyticsRoundedIcon />, path: '/dashboard/category' },
-  { text: 'Location', icon: <AnalyticsRoundedIcon />, path: '/dashboard/location' },
-  { text: 'Business', icon: <AnalyticsRoundedIcon />, path: '/dashboard/business' },
-  { text: 'Clients', icon: <PeopleRoundedIcon />, path: '/dashboard/clients' },
-  { text: 'Users', icon: <PeopleRoundedIcon />, path: '/dashboard/user' },
-  { text: 'Tasks', icon: <AssignmentRoundedIcon />, path: '/dashboard/tasks' },
+  { text: 'Category', icon: <CategoryIcon />, path: '/dashboard/category' },
+  { text: 'Location', icon: <LocationOnIcon />, path: '/dashboard/location' },
+  { text: 'Business', icon: <BusinessIcon />, path: '/dashboard/business' },
+  { text: 'Clients', icon: <SupportAgentIcon />, path: '/dashboard/clients' },
+  { text: 'Users', icon: <InterpreterModeIcon />, path: '/dashboard/user' },
+  { text: 'Role', icon: <AdminPanelSettingsIcon />, path: '/dashboard/roles' },
 ];
 
 export default function SideMenu() {

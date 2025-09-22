@@ -38,7 +38,7 @@ function ButtonField(props) {
 }
 
 export default function CustomDatePicker() {
-  const [value, setValue] = useState(dayjs('2023-04-17'));
+  const [value, setValue] = useState(dayjs());
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
