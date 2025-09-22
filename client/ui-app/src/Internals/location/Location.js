@@ -17,6 +17,10 @@ import {
     Typography,
     CircularProgress,
     IconButton,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
@@ -26,6 +30,7 @@ export default function Location() {
     const { location = [], loading, error } = useSelector(
         (state) => state.locationReducer || {}
     );
+    const [errors, setErrors] = useState({});
 
     const [formData, setFormData] = useState({
         country: "",
@@ -37,7 +42,11 @@ export default function Location() {
         addressLine2: "",
     });
 
-    const [editingId, setEditingId] = useState(null); 
+    const [editingId, setEditingId] = useState(null);
+
+    // 🔹 State for delete dialog
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
 
     useEffect(() => {
         dispatch(getAllLocation());
@@ -47,6 +56,29 @@ export default function Location() {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
+    const validateForm = () => {
+        let newErrors = {};
+
+        if (!formData.country.trim()) newErrors.country = "Country is required";
+        if (!formData.state.trim()) newErrors.state = "State is required";
+        if (!formData.district.trim()) newErrors.district = "District is required";
+        if (!formData.city.trim()) newErrors.city = "City is required";
+
+        if (!formData.pincode.trim()) {
+            newErrors.pincode = "Pincode is required";
+        } else if (!/^\d{5,6}$/.test(formData.pincode)) {
+            newErrors.pincode = "Invalid pincode format";
+        }
+
+        if (!formData.addressLine1.trim()) {
+            newErrors.addressLine1 = "Address Line 1 is required";
+        }
+
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
 
     const resetForm = () => {
         setFormData({
@@ -63,6 +95,8 @@ export default function Location() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!validateForm()) return;
+
         if (editingId) {
             dispatch(editLocation(editingId, formData))
                 .then(() => {
@@ -93,14 +127,26 @@ export default function Location() {
         });
     };
 
-    const handleDelete = (row) => {
-        if (window.confirm("Are you sure you want to delete this location?")) {
-            dispatch(deleteLocation(row.id))
+    const handleDeleteClick = (row) => {
+        setSelectedRow(row);
+        setDeleteDialogOpen(true);
+    };
+
+    const confirmDelete = () => {
+        if (selectedRow) {
+            dispatch(deleteLocation(selectedRow.id))
                 .then(() => {
                     dispatch(getAllLocation());
+                    setDeleteDialogOpen(false);
+                    setSelectedRow(null);
                 })
                 .catch((err) => console.error("Delete location failed:", err));
         }
+    };
+
+    const cancelDelete = () => {
+        setDeleteDialogOpen(false);
+        setSelectedRow(null);
     };
 
     const rows = location.map((loc, index) => ({
@@ -140,7 +186,7 @@ export default function Location() {
                     <IconButton
                         color="error"
                         size="small"
-                        onClick={() => handleDelete(params.row)}
+                        onClick={() => handleDeleteClick(params.row)}
                     >
                         <DeleteOutlineRoundedIcon fontSize="small" />
                     </IconButton>
@@ -170,7 +216,6 @@ export default function Location() {
                         {fields.map((field, i) => (
                             <Grid item xs={12} key={i}>
                                 <TextField
-                                    required={field.required}
                                     fullWidth
                                     type={field.type}
                                     label={field.label}
@@ -178,6 +223,8 @@ export default function Location() {
                                     variant="standard"
                                     value={formData[field.name]}
                                     onChange={handleChange}
+                                    error={Boolean(errors[field.name])}
+                                    helperText={errors[field.name] || ""}
                                     sx={{
                                         "& .MuiInputBase-root": {
                                             height: 50,
@@ -214,7 +261,11 @@ export default function Location() {
                                     )}
                                 </Button>
                                 {editingId && (
-                                    <Button variant="outlined" color="secondary" onClick={resetForm}>
+                                    <Button
+                                        variant="outlined"
+                                        color="secondary"
+                                        onClick={resetForm}
+                                    >
                                         Cancel
                                     </Button>
                                 )}
@@ -239,6 +290,23 @@ export default function Location() {
                     <CustomizedDataGrid rows={rows} columns={locationList} />
                 </Box>
             </Paper>
+
+            {/* 🔹 Delete Confirmation Dialog */}
+            <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogContent>
+                    Are you sure you want to delete{" "}
+                    <strong>{selectedRow?.city || "this location"}</strong>?
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={cancelDelete} color="secondary">
+                        Cancel
+                    </Button>
+                    <Button onClick={confirmDelete} color="error" variant="contained">
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }

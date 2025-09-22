@@ -9,7 +9,7 @@ import AppNavbar from './components/AppNavbar';
 import SideMenu from './components/SideMenu';
 import AppTheme from './theme/AppTheme.js';
 import Header from './components/Header';
-
+import ReloginDialog from './Internals/Login/reLogin.js'; 
 import {
   chartsCustomizations,
   datePickersCustomizations,
@@ -28,6 +28,7 @@ export default function Dashboard(props) {
       <CssBaseline enableColorScheme />
         <Box sx={{ display: 'flex' }}>
         {/* Sidebar */}
+                <ReloginDialog />
         <SideMenu />
 
           {/* Navbar */}

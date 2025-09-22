@@ -9,13 +9,10 @@ import Category from './Internals/categories/Category.js';
 import Tasks from './Internals/Task/Tasks.js';
 import Location from './Internals/location/Location.js';
 import MainGrid from './components/MainGrid.js';
-import Relogin from './Internals/Login/reLogin.js';
 
 function App() {
   return (
     <Router>
-      <Relogin />
-
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />}>

@@ -17,6 +17,10 @@ import {
   Typography,
   CircularProgress,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
@@ -29,6 +33,7 @@ export default function UserClients() {
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [editUserId, setEditUserId] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     clientId: "",
@@ -38,14 +43,40 @@ export default function UserClients() {
     businessName: "",
     businessAddress: "",
   });
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     dispatch(getAllUsersClient());
   }, [dispatch]);
 
+  const validateForm = () => {
+    let newErrors = {};
+
+    if (!formData.clientId.trim()) newErrors.clientId = "Client ID is required";
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.contact.trim()) newErrors.contact = "Contact is required";
+
+    if (!formData.emailId) {
+      newErrors.emailId = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.emailId)) {
+      newErrors.emailId = "Invalid email format";
+    }
+
+    if (!formData.businessName.trim())
+      newErrors.businessName = "Business Name is required";
+    if (!formData.businessAddress.trim())
+      newErrors.businessAddress = "Business Address is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+
   };
 
   const resetForm = () => {
@@ -61,11 +92,12 @@ export default function UserClients() {
     setEditUserId(null);
   };
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
     if (isEditMode && editUserId) {
-      // 🔹 Edit existing client
       dispatch(editUserClient(editUserId, formData))
         .then(() => {
           resetForm();
@@ -73,7 +105,6 @@ export default function UserClients() {
         })
         .catch((err) => console.error("Update client failed:", err));
     } else {
-      // 🔹 Create new client
       dispatch(createUserClient(formData))
         .then(() => {
           resetForm();
@@ -96,12 +127,26 @@ export default function UserClients() {
     setIsEditMode(true);
   };
 
-  const handleDelete = (row) => {
-    if (window.confirm(`Are you sure you want to delete ${row.name}?`)) {
-      dispatch(deleteUserClient(row.id))
-        .then(() => dispatch(getAllUsersClient()))
+  const handleDeleteClick = (row) => {
+    setSelectedUser(row);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedUser) {
+      dispatch(deleteUserClient(selectedUser.id))
+        .then(() => {
+          dispatch(getAllUsersClient());
+          setDeleteDialogOpen(false);
+          setSelectedUser(null);
+        })
         .catch((err) => console.error("Delete failed:", err));
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setSelectedUser(null);
   };
 
   const rows = users.map((user, index) => ({
@@ -129,18 +174,10 @@ export default function UserClients() {
       filterable: false,
       renderCell: (params) => (
         <div style={{ display: "flex", gap: "8px" }}>
-          <IconButton
-            color="primary"
-            size="small"
-            onClick={() => handleEdit(params.row)}
-          >
+          <IconButton color="primary" size="small" onClick={() => handleEdit(params.row)}>
             <EditRoundedIcon fontSize="small" />
           </IconButton>
-          <IconButton
-            color="error"
-            size="small"
-            onClick={() => handleDelete(params.row)}
-          >
+          <IconButton color="error" size="small" onClick={() => handleDeleteClick(params.row)}>
             <DeleteOutlineRoundedIcon fontSize="small" />
           </IconButton>
         </div>
@@ -169,22 +206,18 @@ export default function UserClients() {
             {fields.map((field, i) => (
               <Grid item xs={12} sm={6} key={i}>
                 <TextField
-                  required={field.required}
                   fullWidth
                   type={field.type}
                   label={field.label}
-                  name={field.name}
+                  name={field.name} 
                   variant="standard"
                   value={formData[field.name]}
                   onChange={handleChange}
+                  error={!!errors[field.name]}
+                  helperText={errors[field.name] || ""}
                   sx={{
-                    "& .MuiInputBase-root": {
-                      height: 50,
-                      fontSize: "1.1rem",
-                    },
-                    "& .MuiInputLabel-root": {
-                      fontSize: "1rem",
-                    },
+                    "& .MuiInputBase-root": { height: 50, fontSize: "1.1rem" },
+                    "& .MuiInputLabel-root": { fontSize: "1rem" },
                   }}
                 />
               </Grid>
@@ -197,19 +230,8 @@ export default function UserClients() {
                   mt: 4,
                 }}
               >
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={loading}
-                  sx={{ minWidth: 150 }}
-                >
-                  {loading ? (
-                    <CircularProgress size={24} />
-                  ) : isEditMode ? (
-                    "Update Client"
-                  ) : (
-                    "Create Client"
-                  )}
+                <Button type="submit" variant="contained" disabled={loading} sx={{ minWidth: 150 }}>
+                  {loading ? <CircularProgress size={24} /> : isEditMode ? "Update Client" : "Create Client"}
                 </Button>
               </Box>
             </Grid>
@@ -217,9 +239,7 @@ export default function UserClients() {
         </Box>
         {error && (
           <Typography color="error" sx={{ mt: 2 }}>
-            {typeof error === "string"
-              ? error
-              : error.message || JSON.stringify(error)}
+            {typeof error === "string" ? error : error.message || JSON.stringify(error)}
           </Typography>
         )}
       </Paper>
@@ -233,6 +253,22 @@ export default function UserClients() {
           <CustomizedDataGrid rows={rows} columns={clientList} />
         </Box>
       </Paper>
+
+      {/* 🔹 Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete <strong>{selectedUser?.name || "this client"}</strong>?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

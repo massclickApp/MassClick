@@ -39,6 +39,7 @@ export default function Category() {
     const [businessvalue, setBusinessValue] = useState("");
     const [editMode, setEditMode] = useState(false);
     const [editId, setEditId] = useState(null);
+    const [errors, setErrors] = useState({});
 
     const [formData, setFormData] = useState({
         clientId: "",
@@ -103,6 +104,46 @@ export default function Category() {
         "image",
         "video",
     ];
+    const validateForm = () => {
+        let newErrors = {};
+
+        // Required fields
+        if (!formData.clientId) newErrors.clientId = "Client ID is required";
+        if (!formData.businessName) newErrors.businessName = "Business Name is required";
+        if (!formData.experience) newErrors.experience = "Experience is required";
+        if (!formData.location) newErrors.location = "Location is required";
+        if (!formData.category) newErrors.category = "Category is required";
+        if (!businessvalue || businessvalue === "<p><br></p>") newErrors.businessDetails = "Business Details is required";
+
+        // Email validation
+        if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = "Invalid email format";
+        }
+
+        // Contact number validation
+        if (formData.contact && !/^\d{10}$/.test(formData.contact)) {
+            newErrors.contact = "Contact should be 10 digits";
+        }
+
+        // Whatsapp number validation
+        if (formData.whatsappNumber && !/^\d{10}$/.test(formData.whatsappNumber)) {
+            newErrors.whatsappNumber = "Whatsapp number should be 10 digits";
+        }
+
+        // Pincode validation
+        if (formData.pincode && !/^\d{6}$/.test(formData.pincode)) {
+            newErrors.pincode = "Pincode should be 6 digits";
+        }
+
+        // GSTIN validation
+        if (formData.gstin && !/^[0-9A-Z]{15}$/.test(formData.gstin)) {
+            newErrors.gstin = "GSTIN should be 15 characters";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleBusinessChange = (content) => {
         setBusinessValue(content);
         setFormData((prev) => ({ ...prev, businessDetails: content }));
@@ -185,6 +226,8 @@ export default function Category() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!validateForm()) return;
+
         const payload = { ...formData, businessDetails: businessvalue };
 
         if (editMode && editId) {
@@ -311,13 +354,14 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
+                                error={Boolean(errors.clientId)}
+                                helperText={errors.clientId || ""}
                             />
                         </Grid>
 
                         {/* Business Name */}
                         <Grid item xs={12} sm={4}>
                             <TextField
-                                required
                                 fullWidth
                                 label="Business Name"
                                 name="businessName"
@@ -326,6 +370,8 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
+                                error={Boolean(errors.businessName)}
+                                helperText={errors.businessName || ""}
 
                             />
                         </Grid>
@@ -341,7 +387,8 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
-
+                                error={Boolean(errors.plotNumber)}
+                                helperText={errors.plotNumber || ""}
                             />
                         </Grid>
 
@@ -370,6 +417,8 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
+                                error={Boolean(errors.pincode)}
+                                helperText={errors.pincode || ""}
                             />
                         </Grid>
 
@@ -384,6 +433,8 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
+                                error={Boolean(errors.email)}
+                                helperText={errors.email || ""}
                             />
                         </Grid>
 
@@ -398,6 +449,8 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
+                                error={Boolean(errors.contact)}
+                                helperText={errors.contact || ""}
                             />
                         </Grid>
 
@@ -426,6 +479,8 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
+                                error={Boolean(errors.gstin)}
+                                helperText={errors.gstin || ""}
                             />
                         </Grid>
 
@@ -440,13 +495,14 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
+                                error={Boolean(errors.whatsappNumber)}
+                                helperText={errors.whatsappNumber || ""}
                             />
                         </Grid>
 
                         {/* Experience */}
                         <Grid item xs={12} sm={4}>
                             <TextField
-                                required
                                 fullWidth
                                 label="Experience"
                                 name="experience"
@@ -455,6 +511,8 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
+                                error={Boolean(errors.experience)}
+                                helperText={errors.experience || ""}
                             />
 
                         </Grid>
@@ -471,6 +529,8 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
+                                error={Boolean(errors.location)}
+                                helperText={errors.location || ""}
                             >
                                 {location.map((loc) => (
                                     <MenuItem key={loc._id} value={loc.city}>
@@ -493,6 +553,8 @@ export default function Category() {
                                 onChange={handleChange}
                                 sx={textFieldStyle}
                                 style={{ minWidth: 260 }}
+                                error={Boolean(errors.category)}
+                                helperText={errors.category || ""}
                             >
 
                                 {category.map((cat) => (
@@ -626,7 +688,8 @@ export default function Category() {
                                     variant="standard"
                                     sx={textFieldStyle}
                                     inputRef={fileInputRef}
-
+                                    error={Boolean(errors.category)}
+                                    helperText={errors.category || ""}
 
                                 />
                                 {preview && (
@@ -650,6 +713,8 @@ export default function Category() {
                             formats={formats}
                             placeholder="Type business details here..."
                             style={{ height: '200px' }}
+                              error={Boolean(errors.businessvalue)}
+                                helperText={errors.businessvalue || ""}
                         />
                     </Grid>
                     <Grid item xs={12}>

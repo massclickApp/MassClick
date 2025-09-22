@@ -11,18 +11,21 @@ import {
   TextField,
   Typography,
   CircularProgress,
-  IconButton
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 
 export default function User() {
   const dispatch = useDispatch();
-  const { users = [], loading, error } = useSelector(
-    (state) => state.userReducer || {}
-  );
+  const { users = [], loading, error } = useSelector((state) => state.userReducer || {});
   const [isEditMode, setIsEditMode] = useState(false);
   const [editUserId, setEditUserId] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     userName: "",
@@ -32,6 +35,10 @@ export default function User() {
     emailId: "",
     role: "",
   });
+
+  // 🔹 Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     dispatch(getAllUsers());
@@ -44,40 +51,36 @@ export default function User() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    if (!validateForm()) return;
     if (isEditMode && editUserId) {
       dispatch(editUser(editUserId, formData))
         .then(() => {
-          setFormData({
-            userName: "",
-            contact: "",
-            businessLocation: "",
-            businessCategory: "",
-            emailId: "",
-            role: "",
-          });
-          setIsEditMode(false);
-          setEditUserId(null);
+          resetForm();
           dispatch(getAllUsers());
         })
         .catch((err) => console.error("Update user failed:", err));
     } else {
       dispatch(createUser(formData))
         .then(() => {
-          setFormData({
-            userName: "",
-            contact: "",
-            businessLocation: "",
-            businessCategory: "",
-            emailId: "",
-            role: "",
-          });
+          resetForm();
           dispatch(getAllUsers());
         })
         .catch((err) => console.error("Create user failed:", err));
     }
   };
+  const validateForm = () => {
+    let newErrors = {};
+    if (!formData.userName) newErrors.userName = "User Name is required";
+    if (!formData.contact) newErrors.contact = "Contact is required";
+    if (!formData.emailId) newErrors.emailId = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.emailId)) newErrors.emailId = "Invalid email format";
+    if (!formData.role) newErrors.role = "Role is required";
+    if (!formData.businessLocation) newErrors.businessLocation = "Business Location is required";
+    if (!formData.businessCategory) newErrors.businessCategory = "Business Category is required";
 
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   const handleEdit = (row) => {
     setFormData({
       userName: row.userName,
@@ -91,19 +94,45 @@ export default function User() {
     setIsEditMode(true);
   };
 
+  const resetForm = () => {
+    setFormData({
+      userName: "",
+      contact: "",
+      businessLocation: "",
+      businessCategory: "",
+      emailId: "",
+      role: "",
+    });
+    setEditUserId(null);
+    setIsEditMode(false);
+  };
 
-  const handleDelete = (row) => {
-    if (window.confirm(`Are you sure you want to delete ${row.userName}?`)) {
-      dispatch(deleteUser(row.id))
-        .then(() => dispatch(getAllUsers()))
+  const handleDeleteClick = (row) => {
+    setSelectedUser(row);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedUser) {
+      dispatch(deleteUser(selectedUser.id))
+        .then(() => {
+          dispatch(getAllUsers());
+          setDeleteDialogOpen(false);
+          setSelectedUser(null);
+        })
         .catch((err) => console.error("Delete failed:", err));
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setSelectedUser(null);
   };
 
   const rows = users.map((user, index) => ({
     id: user._id || index,
     userName: user.userName,
-    contact: user.contact, 
+    contact: user.contact,
     emailId: user.emailId,
     role: user.role,
     businessLocation: user.businessLocation || "-",
@@ -124,18 +153,10 @@ export default function User() {
       filterable: false,
       renderCell: (params) => (
         <div style={{ display: "flex", gap: "8px" }}>
-          <IconButton
-            color="primary"
-            size="small"
-            onClick={() => handleEdit(params.row)}
-          >
+          <IconButton color="primary" size="small" onClick={() => handleEdit(params.row)}>
             <EditRoundedIcon fontSize="small" />
           </IconButton>
-          <IconButton
-            color="error"
-            size="small"
-            onClick={() => handleDelete(params.row)}
-          >
+          <IconButton color="error" size="small" onClick={() => handleDeleteClick(params.row)}>
             <DeleteOutlineRoundedIcon fontSize="small" />
           </IconButton>
         </div>
@@ -156,19 +177,13 @@ export default function User() {
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
         <Typography variant="h6" gutterBottom>
-          Add New User
+          {isEditMode ? "Edit User" : "Add New User"}
         </Typography>
         <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             {fields.map((field, i) => (
-              <Grid
-                item
-                xs={12}
-                sm={field.name === "userName" || field.name === "contact" ? 6 : 12}
-                key={i}
-              >
+              <Grid item xs={12} sm={field.name === "userName" || field.name === "contact" ? 6 : 12} key={i}>
                 <TextField
-                  required={field.required}
                   fullWidth
                   type={field.type}
                   label={field.label}
@@ -176,47 +191,37 @@ export default function User() {
                   variant="standard"
                   value={formData[field.name]}
                   onChange={handleChange}
+                  error={Boolean(errors[field.name])}
+                  helperText={errors[field.name] || ""}
                   sx={{
-                    "& .MuiInputBase-root": {
-                      height: 50,
-                      fontSize: "1.1rem",
-                    },
-                    "& .MuiInputLabel-root": {
-                      fontSize: "1rem",
-                    },
+                    "& .MuiInputBase-root": { height: 50, fontSize: "1.1rem" },
+                    "& .MuiInputLabel-root": { fontSize: "1rem" },
                   }}
                 />
               </Grid>
             ))}
             <Grid item xs={12}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: { xs: 'flex-end', sm: 'flex-start' },
-                  mt: 4,
-                }}
-              >
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={loading}
-                  sx={{ minWidth: 150 }}
-                >
+              <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-end', sm: 'flex-start' }, mt: 4 }}>
+                <Button type="submit" variant="contained" disabled={loading} sx={{ minWidth: 150 }}>
                   {loading ? <CircularProgress size={24} /> : isEditMode ? "Update User" : "Create User"}
                 </Button>
+                {isEditMode && (
+                  <Button variant="outlined" color="secondary" onClick={resetForm} sx={{ ml: 2 }}>
+                    Cancel
+                  </Button>
+                )}
               </Box>
             </Grid>
           </Grid>
         </Box>
         {error && (
           <Typography color="error" sx={{ mt: 2 }}>
-            {typeof error === "string"
-              ? error
-              : error.message || JSON.stringify(error)}
+            {typeof error === "string" ? error : error.message || JSON.stringify(error)}
           </Typography>
         )}
       </Paper>
 
+      {/* User Table */}
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>
           User Table
@@ -225,6 +230,22 @@ export default function User() {
           <CustomizedDataGrid rows={rows} columns={userList} />
         </Box>
       </Paper>
+
+      {/* 🔹 Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete <strong>{selectedUser?.userName || "this user"}</strong>?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

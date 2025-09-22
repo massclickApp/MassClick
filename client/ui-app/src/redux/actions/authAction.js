@@ -52,29 +52,40 @@ export const login = (username, password) => async (dispatch) => {
 };
 
 export const relogin = () => async (dispatch) => {
-  dispatch({ type: RELOGIN_REQUEST });
-  try {
-    const refreshToken = localStorage.getItem('refreshToken');
-    const response = await axios.post(`${API_URL}/oauth/relogin`, { refreshToken });
+    dispatch({ type: RELOGIN_REQUEST });
+    try {
+        const refreshToken = localStorage.getItem("refreshToken");
 
-    const { accessToken, refreshToken: newRefreshToken, user } = response.data;
+        const data = qs.stringify({
+            grant_type: 'refresh_token',
+            client_id: CLIENT_ID,
+            client_secret: CLIENT_SECRET,
+            refresh_token: refreshToken,
+        });
 
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', newRefreshToken);
+        const response = await axios.post(`${API_URL}/oauth/relogin`, data, {
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        });
 
-    dispatch({
-      type: RELOGIN_SUCCESS,
-      payload: { accessToken, refreshToken: newRefreshToken, user },
-    });
+        const { accessToken, accessTokenExpiresAt, refreshToken: newRefreshToken, user } = response.data;
 
-    return response.data;
-  } catch (error) {
-    dispatch({
-      type: RELOGIN_FAILURE,
-      payload: error.response?.data || error.message,
-    });
-    throw error;
-  }
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", newRefreshToken);
+        localStorage.setItem("accessTokenExpiresAt", accessTokenExpiresAt);
+
+        dispatch({
+            type: RELOGIN_SUCCESS,
+            payload: { accessToken, refreshToken: newRefreshToken, user },
+        });
+
+        return response.data;
+    } catch (error) {
+        dispatch({
+            type: RELOGIN_FAILURE,
+            payload: error.response?.data || error.message,
+        });
+        throw error;
+    }
 };
 
 

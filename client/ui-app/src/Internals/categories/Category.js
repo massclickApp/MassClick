@@ -37,6 +37,7 @@ export default function Category() {
     (state) => state.categoryReducer || {}
   );
   const fileInputRef = useRef();
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     _id: null,
@@ -94,6 +95,20 @@ export default function Category() {
         .finally(() => setDeleteConfirm({ open: false, id: null }));
     }
   };
+  const validateForm = () => {
+    let newErrors = {};
+
+    if (!formData.category.trim()) newErrors.category = "Category is required";
+    if (!formData.categoryType) newErrors.categoryType = "Category Type is required";
+    if (formData.categoryType === "Sub Category" && !formData.subCategoryType)
+      newErrors.subCategoryType = "Sub Category Type is required";
+    if (!formData.title.trim()) newErrors.title = "Title is required";
+    if (!formData.keywords.trim()) newErrors.keywords = "Keywords are required";
+    if (!formData.description.trim()) newErrors.description = "Description is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -109,6 +124,7 @@ export default function Category() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
     if (
       formData.categoryType === "Sub Category" &&
@@ -212,7 +228,6 @@ export default function Category() {
             {/* Category Field */}
             <Grid item xs={12} sm={4}>
               <TextField
-                required
                 fullWidth
                 label="Category"
                 name="category"
@@ -220,6 +235,8 @@ export default function Category() {
                 value={formData.category}
                 onChange={handleChange}
                 sx={textFieldStyle}
+                error={Boolean(errors.category)}
+                helperText={errors.category || ""}
               />
             </Grid>
 
@@ -228,7 +245,6 @@ export default function Category() {
               variant="standard"
               sx={textFieldStyle}
               style={{ minWidth: 220 }}
-              required
             >
               <InputLabel id="category-type-label">Category Type</InputLabel>
               <Select
@@ -237,6 +253,8 @@ export default function Category() {
                 onChange={(event) =>
                   setFormData({ ...formData, categoryType: event.target.value })
                 }
+                error={Boolean(errors.categoryType)}
+                helperText={errors.categoryType || ""}
                 input={<Input />}
               >
                 <MenuItem value="">
@@ -258,7 +276,6 @@ export default function Category() {
                   variant="standard"
                   sx={textFieldStyle}
                   style={{ minWidth: 220 }}
-                  required
                 >
                   <InputLabel id="sub-category-type-label">
                     Sub Category Type
@@ -272,6 +289,7 @@ export default function Category() {
                         subCategoryType: event.target.value,
                       })
                     }
+                   
                     input={<Input />}
                   >
                     {subCategories.map((sub) => (
@@ -287,7 +305,6 @@ export default function Category() {
             {/* Title Field */}
             <Grid item xs={12} sm={4}>
               <TextField
-                required
                 fullWidth
                 label="Title"
                 name="title"
@@ -295,13 +312,14 @@ export default function Category() {
                 value={formData.title}
                 onChange={handleChange}
                 sx={textFieldStyle}
+                error={Boolean(errors.title)}
+                helperText={errors.title || ""}
               />
             </Grid>
 
             {/* Keywords Field */}
             <Grid item xs={12} sm={4}>
               <TextField
-                required
                 fullWidth
                 label="Keywords"
                 name="keywords"
@@ -309,13 +327,14 @@ export default function Category() {
                 value={formData.keywords}
                 onChange={handleChange}
                 sx={textFieldStyle}
+                error={Boolean(errors.keywords)}
+                helperText={errors.keywords || ""}
               />
             </Grid>
 
             {/* Description Field */}
             <Grid item xs={12} sm={6}>
               <TextField
-                required
                 fullWidth
                 label="Description"
                 name="description"
@@ -323,6 +342,8 @@ export default function Category() {
                 value={formData.description}
                 onChange={handleChange}
                 sx={textFieldStyle}
+                error={Boolean(errors.description)}
+                helperText={errors.description || ""}
               />
             </Grid>
 
@@ -339,6 +360,8 @@ export default function Category() {
                   variant="standard"
                   sx={textFieldStyle}
                   inputRef={fileInputRef}
+                  error={Boolean(errors.categoryImage)}
+                  helperText={errors.categoryImage || ""}
                 />
                 {preview && (
                   <Avatar src={preview} sx={{ width: 56, height: 56 }} />

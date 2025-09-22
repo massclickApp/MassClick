@@ -6,6 +6,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
@@ -22,8 +23,6 @@ const mainListItems = [
   { text: 'Tasks', icon: <AssignmentRoundedIcon />, path: '/dashboard/tasks' },
 ];
 
-
-
 export default function SideMenu() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,14 +31,22 @@ export default function SideMenu() {
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
       <List dense>
         {mainListItems.map((item, index) => (
-          <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+          <ListItem
+            key={index}
+            disablePadding
+            sx={{ display: 'block', mb: 1 }} 
+          >
             <ListItemButton
               selected={location.pathname === item.path}
               onClick={() => navigate(item.path)}
+              sx={{
+                borderRadius: 1, 
+              }}
             >
-
               <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+              <Typography sx={{ fontSize: '1rem', fontWeight: 600 }}>
+                {item.text}
+              </Typography>
             </ListItemButton>
           </ListItem>
         ))}
