@@ -164,17 +164,22 @@ export default function Category() {
       );
   };
 
-  const rows = category.map((cat, index) => ({
-    id: cat._id || index,
-    _id: cat._id,
-    categoryImage: cat.categoryImage,
-    category: cat.category,
-    categoryType: cat.categoryType,
-    subCategoryType: cat.subCategoryType,
-    title: cat.title || "-",
-    keywords: cat.keywords || "-",
-    description: cat.description || "-",
-  }));
+  const rows = category
+    .filter((category) => category.isActive)
+
+    .map((cat, index) => ({
+      id: cat._id || index,
+      _id: cat._id,
+      categoryImage: cat.categoryImage,
+      category: cat.category,
+      categoryType: cat.categoryType,
+      subCategoryType: cat.subCategoryType,
+      title: cat.title || "-",
+      keywords: cat.keywords || "-",
+      description: cat.description || "-",
+      isActive: cat.isActive,
+
+    }));
 
   const categoryList = [
     {
@@ -289,7 +294,7 @@ export default function Category() {
                         subCategoryType: event.target.value,
                       })
                     }
-                   
+
                     input={<Input />}
                   >
                     {subCategories.map((sub) => (

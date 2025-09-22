@@ -39,8 +39,9 @@ export default function categoryReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        category: state.category.filter(cat => cat._id !== action.payload),
-        error: null,
+        category: state.category.map(cat =>
+          cat._id === action.payload._id ? action.payload : cat
+        ), error: null,
       };
 
     case FETCH_CATEGORY_FAILURE:

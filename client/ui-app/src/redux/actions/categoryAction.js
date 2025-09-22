@@ -77,10 +77,10 @@ export const deleteCategory = (id) => async (dispatch) => {
   dispatch({ type: DELETE_CATEGORY_REQUEST });
   try {
     const token = localStorage.getItem("accessToken");
-    await axios.delete(`${API_URL}/category/delete/${id}`, {
+    const { data } =  await axios.delete(`${API_URL}/category/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    dispatch({ type: DELETE_CATEGORY_SUCCESS, payload: id });
+    dispatch({ type: DELETE_CATEGORY_SUCCESS, payload: data.category });
   } catch (error) {
     dispatch({ type: DELETE_CATEGORY_FAILURE, payload: error.response?.data || error.message });
     throw error;

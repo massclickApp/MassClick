@@ -63,8 +63,13 @@ export const updateUser = async (id, data) => {
 
 export const deleteUser = async (id) => {
   if (!ObjectId.isValid(id)) throw new Error("Invalid user ID");
-  
-  const deletedUser = await userModel.findByIdAndDelete(id);
-  if (!deletedUser) throw new Error("User not found");
-  return deletedUser;
+
+  const user = await userModel.findByIdAndUpdate(
+    id,
+    { isActive: false },
+    { new: true } 
+  );
+
+  if (!user) throw new Error("User not found");
+  return user;
 };

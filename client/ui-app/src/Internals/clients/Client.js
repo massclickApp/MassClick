@@ -149,15 +149,20 @@ export default function UserClients() {
     setSelectedUser(null);
   };
 
-  const rows = users.map((user, index) => ({
-    id: user._id || index,
-    clientId: user.clientId,
-    name: user.name,
-    emailId: user.emailId,
-    contact: user.contact,
-    businessName: user.businessName || "-",
-    businessAddress: user.businessAddress || "-",
-  }));
+  const rows = users
+
+    .filter((user) => user.isActive)
+    .map((user, index) => ({
+      id: user._id || index,
+      clientId: user.clientId,
+      name: user.name,
+      emailId: user.emailId,
+      contact: user.contact,
+      businessName: user.businessName || "-",
+      businessAddress: user.businessAddress || "-",
+      isActive: user.isActive,
+
+    }));
 
   const clientList = [
     { field: "clientId", headerName: "Client ID", flex: 1 },
@@ -209,7 +214,7 @@ export default function UserClients() {
                   fullWidth
                   type={field.type}
                   label={field.label}
-                  name={field.name} 
+                  name={field.name}
                   variant="standard"
                   value={formData[field.name]}
                   onChange={handleChange}

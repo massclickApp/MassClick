@@ -69,9 +69,14 @@ export const updateUserClients = async (id, data) => {
 };
 
 export const deleteUserClients = async (id) => {
-    if (!ObjectId.isValid(id)) throw new Error("Invalid updatedUserClient ID");
+    if (!ObjectId.isValid(id)) throw new Error("Invalid user ID");
 
-    const deletedUserClient = await userClientModel.findByIdAndDelete(id);
-    if (!deletedUserClient) throw new Error("User not found");
-    return deletedUserClient;
+  const user = await userClientModel.findByIdAndUpdate(
+    id,
+    { isActive: false },
+    { new: true } 
+  );
+
+  if (!user) throw new Error("UserClient not found");
+  return user;
 };

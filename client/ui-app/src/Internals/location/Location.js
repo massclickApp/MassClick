@@ -132,8 +132,8 @@ export default function Location() {
         setDeleteDialogOpen(true);
     };
 
-    const confirmDelete = () => {
-        if (selectedRow) {
+    const confirmDelete = () => {debugger
+    if (selectedRow?.id) { 
             dispatch(deleteLocation(selectedRow.id))
                 .then(() => {
                     dispatch(getAllLocation());
@@ -149,16 +149,21 @@ export default function Location() {
         setSelectedRow(null);
     };
 
-    const rows = location.map((loc, index) => ({
-        id: loc._id || index,
-        country: loc.country,
-        state: loc.state,
-        district: loc.district,
-        city: loc.city,
-        pincode: loc.pincode || "-",
-        addressLine1: loc.addressLine1 || "-",
-        addressLine2: loc.addressLine2 || "-",
-    }));
+    const rows = location
+  .filter((loc) => loc.isActive) 
+
+        .map((loc, index) => ({
+            id: loc._id || index,
+            country: loc.country,
+            state: loc.state,
+            district: loc.district,
+            city: loc.city,
+            pincode: loc.pincode || "-",
+            addressLine1: loc.addressLine1 || "-",
+            addressLine2: loc.addressLine2 || "-",
+            isActive: loc.isActive,
+
+        }));
 
     const locationList = [
         { field: "country", headerName: "Country", flex: 1 },

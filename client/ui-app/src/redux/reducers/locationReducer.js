@@ -38,12 +38,15 @@ export default function locationReducer(state = initialState, action) {
       };
 
     case DELETE_LOCATION_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        location: state.location.filter((loc) => loc._id !== action.payload),
-        error: null,
-      };
+  return {
+    ...state,
+    loading: false,
+    location: state.location.map((loc) =>
+      loc._id === action.payload._id ? action.payload : loc
+    ),
+    error: null,
+  };
+
 
     // Failure states
     case FETCH_LOCATION_FAILURE:

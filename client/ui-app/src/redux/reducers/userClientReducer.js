@@ -45,7 +45,9 @@ export default function userClientReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        users: state.users.filter((user) => user._id !== action.payload),
+        users: state.users.map(user =>
+          user._id === action.payload._id ? action.payload : user
+        ),
         error: null,
       };
 

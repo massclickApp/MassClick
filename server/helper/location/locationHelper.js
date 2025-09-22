@@ -57,9 +57,12 @@ export const updateLocation = async (id, data) => {
 };
 
 export const deleteLocation = async (id) => {
-    if (!ObjectId.isValid(id)) throw new Error("Invalid updatedlocation ID");
+    if (!ObjectId.isValid(id)) throw new Error("Invalid deletelocation ID");
 
-    const deletedLocation = await locationModel.findByIdAndDelete(id);
-    if (!deletedLocation) throw new Error("Location not found");
+ const deletedLocation = await locationModel.findByIdAndUpdate(
+    id,
+    { isActive: false },
+    { new: true }   
+  );    if (!deletedLocation) throw new Error("Location not found");
     return deletedLocation;
 };

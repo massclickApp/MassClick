@@ -129,15 +129,19 @@ export default function User() {
     setSelectedUser(null);
   };
 
-  const rows = users.map((user, index) => ({
-    id: user._id || index,
-    userName: user.userName,
-    contact: user.contact,
-    emailId: user.emailId,
-    role: user.role,
-    businessLocation: user.businessLocation || "-",
-    businessCategory: user.businessCategory || "-",
-  }));
+  const rows = users
+    .filter((user) => user.isActive)
+    .map((user, index) => ({
+      id: user._id || index,
+      userName: user.userName,
+      contact: user.contact,
+      emailId: user.emailId,
+      role: user.role,
+      businessLocation: user.businessLocation || "-",
+      businessCategory: user.businessCategory || "-",
+      isActive: user.isActive,
+
+    }));
 
   const userList = [
     { field: "userName", headerName: "User Name", flex: 1 },

@@ -46,7 +46,7 @@ export const deleteUsersAction = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await deleteUser(userId);
-    res.send({ message: "User deleted successfully", user });
+    res.send({ message: "User deactivated successfully", user });
   } catch (error) {
     console.error(error);
     return res.status(400).send({ message: error.message });

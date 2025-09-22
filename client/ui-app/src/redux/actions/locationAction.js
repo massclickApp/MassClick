@@ -77,12 +77,15 @@ export const deleteLocation = (id) => async (dispatch) => {
   dispatch({ type: DELETE_LOCATION_REQUEST });
   try {
     const token = localStorage.getItem("accessToken");
-    await axios.delete(`${API_URL}/location/delete/${id}`, {
+    const { data } = await axios.delete(`${API_URL}/location/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    dispatch({ type: DELETE_LOCATION_SUCCESS, payload: id });
+    dispatch({ type: DELETE_LOCATION_SUCCESS, payload: data.location });
   } catch (error) {
-    dispatch({ type: DELETE_LOCATION_FAILURE, payload: error.response?.data || error.message });
+    dispatch({
+      type: DELETE_LOCATION_FAILURE,
+      payload: error.response?.data || error.message,
+    });
     throw error;
   }
 };

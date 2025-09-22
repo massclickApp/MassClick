@@ -39,8 +39,9 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        users: state.users.filter(user => user._id !== action.payload),
-        error: null
+        users: state.users.map(user =>
+          user._id === action.payload._id ? action.payload : user
+        ), error: null
       };
 
     case FETCH_USERS_FAILURE:

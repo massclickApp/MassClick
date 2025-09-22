@@ -77,10 +77,10 @@ export const deleteUserClient = (id) => async (dispatch) => {
   dispatch({ type: DELETE_USERCLIENT_REQUEST });
   try {
     const token = localStorage.getItem("accessToken");
-    await axios.delete(`${API_URL}/userclient/delete/${id}`, {
+    const { data } = await axios.delete(`${API_URL}/userclient/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    dispatch({ type: DELETE_USERCLIENT_SUCCESS, payload: id });
+    dispatch({ type: DELETE_USERCLIENT_SUCCESS, payload: data.user  });
   } catch (error) {
     dispatch({ type: DELETE_USERCLIENT_FAILURE, payload: error.response?.data || error.message });
     throw error;
