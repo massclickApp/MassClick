@@ -30,6 +30,8 @@ import Select from "@mui/material/Select";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import Input from "@mui/material/Input";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
 
 export default function Category() {
   const dispatch = useDispatch();
@@ -354,22 +356,35 @@ export default function Category() {
 
             {/* Image Upload Field */}
             <Grid item xs={12}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                <TextField
-                  fullWidth
-                  type="file"
-                  label="Image"
-                  InputLabelProps={{ shrink: true }}
-                  inputProps={{ accept: "image/*" }}
-                  onChange={handleImageChange}
-                  variant="standard"
-                  sx={textFieldStyle}
-                  inputRef={fileInputRef}
-                  error={Boolean(errors.categoryImage)}
-                  helperText={errors.categoryImage || ""}
-                />
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 4 }}>
+                <Box>
+                  <Button
+                    variant="contained"
+                    startIcon={<CloudUploadIcon />}
+                    component="label"
+                    sx={{ minWidth: 150 }}
+                  >
+                    Upload Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      ref={fileInputRef}
+                      onChange={handleImageChange}
+                    />
+                  </Button>
+                  {errors?.category && (
+                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                      {errors.category}
+                    </Typography>
+                  )}
+                </Box>
+
                 {preview && (
-                  <Avatar src={preview} sx={{ width: 56, height: 56 }} />
+                  <Avatar
+                    src={preview}
+                    sx={{ width: 56, height: 56 }}
+                  />
                 )}
               </Box>
             </Grid>
@@ -421,13 +436,18 @@ export default function Category() {
       >
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete this category?
+          Are you sure you want to delete{" "}
+          <strong>{deleteConfirm.itemName || "this category"}</strong>?
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteConfirm({ open: false, id: null })}>
+          <Button onClick={() => setDeleteConfirm({ open: false, id: null })} color="secondary">
             Cancel
           </Button>
-          <Button color="error" onClick={confirmDelete}>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={confirmDelete}
+          >
             Delete
           </Button>
         </DialogActions>

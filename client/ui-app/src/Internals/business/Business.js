@@ -6,6 +6,7 @@ import { getAllCategory } from "../../redux/actions/categoryAction";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import {
     Box,
@@ -422,7 +423,6 @@ export default function Category() {
                             />
                         </Grid>
 
-                        {/* Email */}
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -438,7 +438,6 @@ export default function Category() {
                             />
                         </Grid>
 
-                        {/* Contact */}
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -454,7 +453,6 @@ export default function Category() {
                             />
                         </Grid>
 
-                        {/* Contact List */}
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -468,7 +466,6 @@ export default function Category() {
                             />
                         </Grid>
 
-                        {/* GSTIN */}
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -484,7 +481,6 @@ export default function Category() {
                             />
                         </Grid>
 
-                        {/* Whatsapp Number */}
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -500,7 +496,6 @@ export default function Category() {
                             />
                         </Grid>
 
-                        {/* Experience */}
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -517,7 +512,6 @@ export default function Category() {
 
                         </Grid>
 
-                        {/* Location */}
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 select
@@ -677,21 +671,30 @@ export default function Category() {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <TextField
-                                    fullWidth
-                                    type="file"
-                                    label="Image"
-                                    InputLabelProps={{ shrink: true }}
-                                    inputProps={{ accept: "image/*" }}
-                                    onChange={handleImageChange}
-                                    variant="standard"
-                                    sx={textFieldStyle}
-                                    inputRef={fileInputRef}
-                                    error={Boolean(errors.category)}
-                                    helperText={errors.category || ""}
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                <Box>
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<CloudUploadIcon />}
+                                        component="label"
+                                        sx={{ minWidth: 150 }}
+                                    >
+                                        Upload Image
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            hidden
+                                            ref={fileInputRef}
+                                            onChange={handleImageChange}
+                                        />
+                                    </Button>
+                                    {errors?.businessList && (
+                                        <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                                            {errors.businessList}
+                                        </Typography>
+                                    )}
+                                </Box>
 
-                                />
                                 {preview && (
                                     <Avatar
                                         src={preview}
@@ -713,8 +716,8 @@ export default function Category() {
                             formats={formats}
                             placeholder="Type business details here..."
                             style={{ height: '200px' }}
-                              error={Boolean(errors.businessvalue)}
-                                helperText={errors.businessvalue || ""}
+                            error={Boolean(errors.businessvalue)}
+                            helperText={errors.businessvalue || ""}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -763,21 +766,30 @@ export default function Category() {
             </Paper>
             <Dialog
                 open={deleteDialog.open}
-                onClose={() => setDeleteDialog({ open: false, id: null })}
+                onClose={() => setDeleteDialog({ open: false, id: null, name: "" })}
             >
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>
-                    Are you sure you want to delete this business?
+                    Are you sure you want to delete{" "}
+                    <strong>{deleteDialog.name || "this business"}</strong>?
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setDeleteDialog({ open: false, id: null })}>
+                    <Button
+                        onClick={() => setDeleteDialog({ open: false, id: null, name: "" })}
+                        color="secondary"
+                    >
                         Cancel
                     </Button>
-                    <Button color="error" onClick={confirmDelete}>
+                    <Button
+                        color="error"
+                        variant="contained"
+                        onClick={confirmDelete}
+                    >
                         Delete
                     </Button>
                 </DialogActions>
             </Dialog>
+
         </Container>
     );
 }

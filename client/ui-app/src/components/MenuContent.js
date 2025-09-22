@@ -4,14 +4,10 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
-import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
-import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import CategoryIcon from '@mui/icons-material/Category';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -36,26 +32,45 @@ export default function SideMenu() {
   return (
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
       <List dense>
-        {mainListItems.map((item, index) => (
-          <ListItem
-            key={index}
-            disablePadding
-            sx={{ display: 'block', mb: 1 }} 
-          >
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => navigate(item.path)}
-              sx={{
-                borderRadius: 1, 
-              }}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <Typography sx={{ fontSize: '1rem', fontWeight: 600 }}>
-                {item.text}
-              </Typography>
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {mainListItems.map((item, index) => {
+          const selected = location.pathname === item.path;
+
+          return (
+            <ListItem key={index} disablePadding sx={{ display: 'block', mb: 1 }}>
+              <ListItemButton
+                selected={selected}
+                onClick={() => navigate(item.path)}
+                sx={{
+                  borderRadius: 1,
+                  backgroundColor: selected ? '#FF8C42' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: selected ? '#FF8C42' : '#FFE0B2',
+                  },
+                  color: selected ? '#fff' : '#333',
+                  transition: 'all 0.2s ease-in-out',
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    color: selected ? '#fff' : '#ea6d11',
+                    minWidth: '40px',
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <Typography
+                  sx={{
+                    fontSize: '1rem',
+    fontWeight: 'bold', // reliable bold across all fonts
+                    color: selected ? '#FF8C42' : '#333'
+                  }}
+                >
+                  {item.text}
+                </Typography>
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
     </Stack>
   );
