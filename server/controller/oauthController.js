@@ -19,7 +19,7 @@ export const oauthClientAction = async (req, res) => {
     }
 
     const token = await createClientToken(clientId, clientSecret);
-    res.send(token); // <-- returns accessToken + refreshToken + dummy user
+    res.send(token); 
   } catch (error) {
     console.error(error);
     return res.status(BAD_REQUEST.code).send({ error: error.message });

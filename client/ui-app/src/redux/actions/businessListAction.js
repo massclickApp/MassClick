@@ -3,7 +3,8 @@ import {
   FETCH_BUSINESS_REQUEST, FETCH_BUSINESS_SUCCESS, FETCH_BUSINESS_FAILURE,
   CREATE_BUSINESS_REQUEST, CREATE_BUSINESS_SUCCESS, CREATE_BUSINESS_FAILURE,
   EDIT_BUSINESS_REQUEST, EDIT_BUSINESS_SUCCESS, EDIT_BUSINESS_FAILURE,
-  DELETE_BUSINESS_REQUEST, DELETE_BUSINESS_SUCCESS, DELETE_BUSINESS_FAILURE
+  DELETE_BUSINESS_REQUEST, DELETE_BUSINESS_SUCCESS, DELETE_BUSINESS_FAILURE,
+  ACTIVE_BUSINESS_REQUEST, ACTIVE_BUSINESS_SUCCESS, ACTIVE_BUSINESS_FAILURE
 } from "../actions/userActionTypes.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -52,6 +53,29 @@ export const createBusinessList = (businessListData) => async (dispatch) => {
   } catch (error) {
     const errPayload = error.response?.data || error.message;
     dispatch({ type: CREATE_BUSINESS_FAILURE, payload: errPayload });
+    throw error;
+  }
+};
+export const toggleBusinessStatus = ({ id, newStatus }) => async (dispatch) => {
+  dispatch({ type: ACTIVE_BUSINESS_REQUEST });
+
+  try {
+    const token = localStorage.getItem("accessToken");
+
+    const response = await axios.put(
+      `${API_URL}/businesslist/activate/${id}`,
+      { activeBusinesses: newStatus },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    const updatedBusiness = response.data.business;
+
+    dispatch({ type: ACTIVE_BUSINESS_SUCCESS, payload: updatedBusiness });
+
+    return updatedBusiness;
+  } catch (error) {
+    const errPayload = error.response?.data || error.message;
+    dispatch({ type: ACTIVE_BUSINESS_FAILURE, payload: errPayload });
     throw error;
   }
 };

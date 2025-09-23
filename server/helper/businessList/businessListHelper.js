@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import businessListModel from "../../model/businessList/businessListModel.js"
+import mongoose from "mongoose";
 
 export const createBusinessList = async function (reqBody = {}) {
     try {
@@ -63,4 +64,17 @@ export const deleteBusinessList = async (id) => {
     const deletedbusiness = await businessListModel.findByIdAndDelete(id);
     if (!deletedbusiness) throw new Error("business not found");
     return deletedbusiness;
+};
+export const activeBusinessList = async (id, newStatus) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid business ID");
+
+    const business = await businessListModel.findByIdAndUpdate(
+        id,
+        { activeBusinesses: newStatus },
+        { new: true }
+    );
+
+    if (!business) throw new Error("Business not found");
+
+    return business;
 };

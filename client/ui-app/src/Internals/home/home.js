@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Typography } from "@mui/material";
+import { Box, Typography, Button, TextField } from '@mui/material';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { clientLogin } from '../../redux/actions/authAction.js';
@@ -14,22 +14,19 @@ const BusinessListing = () => {
     const [businesses, setBusinesses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [accessToken, setAccessToken] = useState('');
-
+    
     const categories = [
         "Construction Company", "Travels", "Events", "Education", "Hotels",
         "Spa", "Real Estate", "Interior Designer", "Dealers", "CCTV", "Manufacturer", "Hostels"
     ];
 
-    // Fetch client token and businesses
     useEffect(() => {
         const fetchBusinesses = async () => {
             try {
-                // Step 1: Get client token
                 const tokenData = await dispatch(clientLogin());
                 const token = tokenData.accessToken;
                 setAccessToken(token);
 
-                // Step 2: Fetch businesses from protected API
                 const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/businesses`, {
                     headers: {
                         Authorization: `Bearer ${token}`,

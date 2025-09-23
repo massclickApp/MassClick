@@ -2,7 +2,8 @@ import {
   FETCH_BUSINESS_REQUEST, FETCH_BUSINESS_SUCCESS, FETCH_BUSINESS_FAILURE,
   CREATE_BUSINESS_REQUEST, CREATE_BUSINESS_SUCCESS, CREATE_BUSINESS_FAILURE,
   EDIT_BUSINESS_REQUEST, EDIT_BUSINESS_SUCCESS, EDIT_BUSINESS_FAILURE,
-  DELETE_BUSINESS_REQUEST, DELETE_BUSINESS_SUCCESS, DELETE_BUSINESS_FAILURE
+  DELETE_BUSINESS_REQUEST, DELETE_BUSINESS_SUCCESS, DELETE_BUSINESS_FAILURE,
+  ACTIVE_BUSINESS_REQUEST, ACTIVE_BUSINESS_SUCCESS, ACTIVE_BUSINESS_FAILURE
 } from '../actions/userActionTypes';
 
 const initialState = {
@@ -18,6 +19,7 @@ export default function businessListReducer(state = initialState, action) {
     case CREATE_BUSINESS_REQUEST:
     case EDIT_BUSINESS_REQUEST:
     case DELETE_BUSINESS_REQUEST:
+    case ACTIVE_BUSINESS_REQUEST: // ✅ toggle status loading
       return { ...state, loading: true, error: null };
 
     case FETCH_BUSINESS_SUCCESS:
@@ -32,6 +34,7 @@ export default function businessListReducer(state = initialState, action) {
       };
 
     case EDIT_BUSINESS_SUCCESS:
+    case ACTIVE_BUSINESS_SUCCESS: // ✅ toggle status success updates the business
       return {
         ...state,
         loading: false,
@@ -49,10 +52,12 @@ export default function businessListReducer(state = initialState, action) {
         error: null,
       };
 
+    // 🔹 Common failure
     case FETCH_BUSINESS_FAILURE:
     case CREATE_BUSINESS_FAILURE:
     case EDIT_BUSINESS_FAILURE:
     case DELETE_BUSINESS_FAILURE:
+    case ACTIVE_BUSINESS_FAILURE: // ✅ toggle status failure
       return { ...state, loading: false, error: action.payload };
 
     default:

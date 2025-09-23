@@ -83,8 +83,8 @@ export const createClientToken = async (clientId, clientSecret) => {
     const tokenObj = {
         accessToken,
         refreshToken,
-        accessTokenExpiresAt: new Date(Date.now() + 20 * 60 * 1000), // 20 mins
-        refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        accessTokenExpiresAt: new Date(Date.now() + 20 * 60 * 1000), 
+        refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 
     };
 
     const savedToken = await saveToken(tokenObj, client, user);

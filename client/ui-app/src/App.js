@@ -13,7 +13,8 @@ import Roles from './Internals/Roles/Roles.js';
 import Location from './Internals/location/Location.js';
 import MainGrid from './components/MainGrid.js';
 import PrivateRoute from './PrivateRoute';
-import BusinessListing from './Internals/home/home.js'; 
+import BusinessListing from './Internals/home/home.js';
+import { SnackbarProvider } from 'notistack';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -59,6 +60,12 @@ function App() {
   }
 
   return (
+     <SnackbarProvider
+      maxSnack={3}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      autoHideDuration={5000} 
+      preventDuplicate
+    >
     <Router>
       <Routes>
         <Route
@@ -70,11 +77,11 @@ function App() {
             />
           }
         />
+        <Route path="home" element={<BusinessListing />} />
 
         <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
           <Route path="/dashboard" element={<Dashboard />}>
             <Route index element={<MainGrid />} />
-            <Route path="home" element={<BusinessListing />} /> 
             <Route path="user" element={<User />} />
             <Route path="clients" element={<Clients />} />
             <Route path="business" element={<Business />} />
@@ -85,6 +92,7 @@ function App() {
         </Route>
       </Routes>
     </Router>
+    </SnackbarProvider>
   );
 }
 

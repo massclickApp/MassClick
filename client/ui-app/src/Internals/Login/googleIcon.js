@@ -1,4 +1,4 @@
-import SvgIcon from '@mui/joy/SvgIcon';
+import { SvgIcon } from '@mui/material';
 
 export default function GoogleIcon() {
   return (

@@ -11,15 +11,15 @@ import AppTheme from './theme/AppTheme.js';
 import Header from './components/Header';
 // import ReloginDialog from './Internals/Login/reLogin.js'; 
 import {
-  chartsCustomizations,
-  datePickersCustomizations,
-  treeViewCustomizations,
+  // chartsCustomizations,
+  // datePickersCustomizations,
+  // treeViewCustomizations,
 } from './theme/customizations';
 
 const xThemeComponents = {
-  ...chartsCustomizations,
-  ...datePickersCustomizations,
-  ...treeViewCustomizations,
+  // ...chartsCustomizations,
+  // ...datePickersCustomizations,
+  // ...treeViewCustomizations,
 };
 
 export default function Dashboard(props) {

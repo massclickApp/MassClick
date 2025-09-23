@@ -1,4 +1,4 @@
-import { createBusinessList, viewBusinessList, viewAllBusinessList, updateBusinessList, deleteBusinessList } from "../../helper/businessList/businessListHelper.js";
+import { createBusinessList, viewBusinessList, viewAllBusinessList, updateBusinessList, deleteBusinessList,activeBusinessList } from "../../helper/businessList/businessListHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 
 export const addBusinessListAction = async (req, res) => {
@@ -51,4 +51,20 @@ export const deleteBusinessListAction = async (req, res) => {
         console.error(error);
         return res.status(400).send({ message: error.message });
     }
+};
+export const activeBusinessListAction = async (req, res) => {
+  try {
+    const businessId = req.params.id;
+    const { activeBusinesses } = req.body;
+
+    const business = await activeBusinessList(businessId, activeBusinesses);
+
+    res.send({
+      message: `Business ${business.activeBusinesses ? "activated" : "deactivated"} successfully`,
+      business,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(400).send({ message: error.message });
+  }
 };

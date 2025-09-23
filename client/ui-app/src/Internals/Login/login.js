@@ -3,40 +3,48 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../redux/actions/authAction.js';
 import {
-  CssVarsProvider, extendTheme, useColorScheme, GlobalStyles, CssBaseline,
-  Box, Button, Checkbox, Divider, FormControl, FormLabel, IconButton,
-  Link, Input, Typography, Stack
-} from '@mui/joy';
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Link,
+  TextField,
+  Typography,
+  Stack,
+  CssBaseline,
+  Paper,
+} from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import GoogleIcon from './googleIcon.js';
 import { useNavigate } from 'react-router-dom';
-import companyLogo from "../../assets/mclogo.png"
+import companyLogo from "../../assets/mclogo.png";
 
-const customTheme = extendTheme({ defaultColorScheme: 'light' });
-
-function ColorSchemeToggle(props) {
-  const { mode, setMode } = useColorScheme();
+function ColorSchemeToggle({ mode, setMode }) {
   const [mounted, setMounted] = React.useState(false);
-
   React.useEffect(() => setMounted(true), []);
-
   return (
     <IconButton
       aria-label="toggle light/dark mode"
-      size="sm"
-      variant="outlined"
       disabled={!mounted}
+      sx={{
+        border: '1px solid #ccc',
+        transition: 'all 0.3s',
+        '&:hover': { transform: 'rotate(20deg)', backgroundColor: '#f5f5f5' },
+      }}
       onClick={() => setMode(mode === 'light' ? 'dark' : 'light')}
-      {...props}
     >
       {mode === 'light' ? <DarkModeRoundedIcon /> : <LightModeRoundedIcon />}
     </IconButton>
   );
 }
 
-export default function Login({setIsAuthenticated}) {
+export default function Login({ setIsAuthenticated }) {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
@@ -44,12 +52,24 @@ export default function Login({setIsAuthenticated}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
+  const [mode, setMode] = useState('light');
+
+  const theme = React.useMemo(() =>
+    createTheme({
+      palette: {
+        mode,
+        primary: { main: '#ea6d11' },
+        secondary: { main: '#1976d2' },
+        background: { default: mode === 'light' ? '#f8f9fa' : '#121212' },
+      },
+      typography: { fontFamily: `'Inter', sans-serif` },
+    }), [mode]
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(login(email, password));
   };
-
 
   useEffect(() => {
     if (auth.user && auth.accessToken) {
@@ -62,135 +82,106 @@ export default function Login({setIsAuthenticated}) {
   }, [auth, navigate, setIsAuthenticated]);
 
   return (
-    <CssVarsProvider theme={customTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      <GlobalStyles
-        styles={{
-          ':root': {
-            '--Form-maxWidth': '800px',
-            '--Transition-duration': '0.4s',
-          },
-        }}
-      />
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, minHeight: '100vh' }}>
+        
+        {/* Left Side - Login Form */}
+        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', px: 4 }}>
+          <Paper elevation={6} sx={{ p: 6, borderRadius: 4, width: { xs: '90%', sm: 450 } }}>
+            <Stack spacing={4}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                  <IconButton color="primary"><BadgeRoundedIcon /></IconButton>
+                  <Box component="img" src={companyLogo} alt="Company Logo" sx={{ height: 40 }} />
+                </Box>
+                <ColorSchemeToggle mode={mode} setMode={setMode} />
+              </Box>
 
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          minHeight: '100vh',
-        }}
-      >
-        {/* Left Form */}
-        <Box
-          sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            px: { xs: 2, sm: 4 },
-            py: { xs: 2, sm: 4 },
-          }}
-        >
-          {/* Header */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 4 }}>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <IconButton variant="soft" color="primary" size="sm">
-                <BadgeRoundedIcon />
-              </IconButton>
-  <Box
-                component="img"
-                src={companyLogo}
-                alt="Company Logo"
-                sx={{ height: 40 }}
-              />
-                          </Box>
-            <ColorSchemeToggle />
-          </Box>
-
-          {/* Main Form */}
-          <Box sx={{ width: { xs: '90%', sm: 400 } }}>
-            <Stack sx={{ gap: 4, mb: 2 }}>
-              <Stack sx={{ gap: 1 }}>
-                <Typography component="h1" level="h3">Sign in</Typography>
-                <Typography level="body-sm">
-                  New to company?{' '}
-                  <Link href="#" level="title-sm">Sign up!</Link>
+              <Stack spacing={1}>
+                <Typography variant="h4" sx={{ fontWeight: 700 }}>Sign in</Typography>
+                <Typography variant="body2">
+                  New to company? <Link href="#">Sign up!</Link>
                 </Typography>
               </Stack>
 
-              <Button variant="soft" color="neutral" fullWidth startDecorator={<GoogleIcon />}>
+              <Button variant="outlined" fullWidth startIcon={<GoogleIcon />} sx={{ borderRadius: 3 }}>
                 Continue with Google
               </Button>
-            </Stack>
 
-            <Divider>or</Divider>
+              <Divider>or</Divider>
 
-            {auth.error && (
-              <Typography color="danger" level="body-sm">
-                {auth.error.message || auth.error}
+              {auth.error && <Typography color="error">{auth.error.message || auth.error}</Typography>}
+
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <TextField
+                  label="Username"
+                  size="small"
+                  variant="outlined"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  fullWidth
+                  required
+                />
+                <TextField
+                  label="Password"
+                  size="small"
+                  variant="outlined"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  fullWidth
+                  required
+                />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Checkbox checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember me
+                  <Link href="#">Forgot password?</Link>
+                </Box>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  disabled={auth.loading}
+                  sx={{ borderRadius: 3, py: 1.5, fontWeight: 600 }}
+                >
+                  {auth.loading ? 'Logging in...' : 'Sign in'}
+                </Button>
+              </form>
+
+              <Typography variant="caption" sx={{ textAlign: 'center', mt: 4 }}>
+                © MassClick {new Date().getFullYear()}
               </Typography>
-            )}
-
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
-              <FormControl required>
-                <FormLabel>UserName</FormLabel>
-                <Input type="text" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-              </FormControl>
-
-              <FormControl required>
-                <FormLabel>Password</FormLabel>
-                <Input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-              </FormControl>
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-                <Checkbox size="sm" label="Remember me" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-                <Link level="title-sm" href="#">Forgot your password?</Link>
-              </Box>
-
-              <Button type="submit" fullWidth disabled={auth.loading}>
-                {auth.loading ? 'Logging in...' : 'Sign in'}
-              </Button>
-            </form>
-          </Box>
-
-          {/* Footer */}
-          <Box sx={{ mt: 4, py: 3 }}>
-            <Typography level="body-xs" sx={{ textAlign: 'center' }}>
-              © Your company {new Date().getFullYear()}
-            </Typography>
-          </Box>
+            </Stack>
+          </Paper>
         </Box>
 
-<Box
-  sx={{
-    flex: 1,
-    display: { xs: 'none', md: 'flex' },
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderLeft: '1px solid #ccc',
-    minHeight: '100vh',
-    px: 6,
-    textAlign: 'center',
-    flexDirection: 'column',
-    gap: 2,
-  }}
->
-  <Typography sx={{ color: '#ea6d11', fontSize: '3rem', fontWeight: 'bold' }}>
-    India's Best Local Business Search Engine
-  </Typography>
-  <Typography sx={{ color: '#ea6d11', fontSize: '2rem' }}>
-    One of the most widely used local search engines in India
-  </Typography>
-  <Typography sx={{ color: '#ea6d11', fontSize: '1.5rem' }}>
-    MassClick provides information on a vast range of businesses, including restaurants, shops, service providers, and more
-  </Typography>
-  <Typography sx={{ color: '#ea6d11', fontSize: '1.2rem' }}>
-    It offers user reviews, ratings, contact details, and directions
-  </Typography>
-</Box>
+        {/* Right Side - Info Section */}
+        <Box sx={{
+          flex: 1,
+          display: { xs: 'none', md: 'flex' },
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: 'linear-gradient(135deg, #fceabb 0%, #f8b500 100%)',
+          flexDirection: 'column',
+          textAlign: 'center',
+          px: 6,
+          gap: 3
+        }}>
+          <Typography sx={{ color: '#fff', fontSize: '3rem', fontWeight: 'bold', textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
+            India's Best Local Business Search Engine
+          </Typography>
+          <Typography sx={{ color: '#fff', fontSize: '2rem', textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}>
+            Widely used local search engine
+          </Typography>
+          <Typography sx={{ color: '#fff', fontSize: '1.5rem', textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>
+            Provides info on restaurants, shops, services, and more
+          </Typography>
+          <Typography sx={{ color: '#fff', fontSize: '1.2rem', textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>
+            Offers user reviews, ratings, contact details, and directions
+          </Typography>
+        </Box>
+
       </Box>
-    </CssVarsProvider>
+    </ThemeProvider>
   );
 }

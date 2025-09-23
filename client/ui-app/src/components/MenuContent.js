@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import { Typography } from '@mui/material';
 
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -16,7 +16,7 @@ import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const mainListItems = [
-  { text: 'Home', icon: <HomeRoundedIcon />, path: '/dashboard/home' },
+  { text: 'Home', icon: <HomeRoundedIcon />, path: '/dashboard' },
   { text: 'Category', icon: <CategoryIcon />, path: '/dashboard/category' },
   { text: 'Location', icon: <LocationOnIcon />, path: '/dashboard/location' },
   { text: 'Business', icon: <BusinessIcon />, path: '/dashboard/business' },

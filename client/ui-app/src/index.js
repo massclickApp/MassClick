@@ -4,25 +4,30 @@ import App from './App';
 import { store } from './redux/store.js';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
-import { CssVarsProvider, extendTheme } from '@mui/joy/styles';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 
-const theme = extendTheme({
-  defaultColorScheme: 'light',
+const theme = createTheme({
+  palette: {
+    mode: 'light', 
+    primary: { main: '#1976d2' },
+    secondary: { main: '#9c27b0' },
+  },
   typography: {
     fontFamily: `'Inter', sans-serif`,
-    body1: { fontSize: '1rem' },   
-    h1: { fontSize: '2rem' },      
+    h1: { fontSize: '2rem' },
     h2: { fontSize: '1.75rem' },
     h3: { fontSize: '1.5rem' },
+    body1: { fontSize: '1rem' },
   },
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
-    <CssVarsProvider theme={theme}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <App />
-    </CssVarsProvider>
+    </ThemeProvider>
   </Provider>
 );
 
