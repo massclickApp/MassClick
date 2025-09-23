@@ -51,15 +51,15 @@ export default function OptionsMenu() {
       >
         <Box
           sx={{
-            width: 40,          // increase size
+            width: 40,          
             height: 40,
-            borderRadius: '50%', // make it fully circular
-            overflow: 'hidden',  // ensure rounded shape
+            borderRadius: '50%', 
+            overflow: 'hidden',  
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: '#fff', // optional: add a background
-            boxShadow: '0 2px 6px rgba(0,0,0,0.2)', // optional: subtle shadow
+            backgroundColor: '#fff', 
+            boxShadow: '0 2px 6px rgba(0,0,0,0.2)', 
           }}
         >
           <AccountCircleRoundedIcon sx={{ width: 40, height: 40, }} />

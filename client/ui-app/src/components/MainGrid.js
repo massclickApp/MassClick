@@ -88,6 +88,7 @@ export default function MainGrid() {
       flex: 1,
       renderCell: (params) => {
         const isActive = activeStatus[params.row._id] ?? params.row.activeBusinesses;
+        const businessName = params.row.businessName;
 
         const handleClick = async () => {
           const newStatus = !isActive;
@@ -96,11 +97,10 @@ export default function MainGrid() {
           try {
             await dispatch(toggleBusinessStatus({ id: params.row._id, newStatus }));
 
-            // Show snackbar based on new status
             if (newStatus) {
-              enqueueSnackbar('Business is now Active!', { variant: 'success' });
+              enqueueSnackbar(`${businessName} is now Active!`, { variant: 'success' });
             } else {
-              enqueueSnackbar('Business is now Inactive!', { variant: 'error' });
+              enqueueSnackbar(`${businessName} is now Inactive!`, { variant: 'error' });
             }
 
           } catch (err) {

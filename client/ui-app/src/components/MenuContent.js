@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Stack from '@mui/material/Stack';
-import { Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -16,13 +16,13 @@ import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const mainListItems = [
-  { text: 'Home', icon: <HomeRoundedIcon />, path: '/dashboard' },
-  { text: 'Category', icon: <CategoryIcon />, path: '/dashboard/category' },
-  { text: 'Location', icon: <LocationOnIcon />, path: '/dashboard/location' },
-  { text: 'Business', icon: <BusinessIcon />, path: '/dashboard/business' },
-  { text: 'Clients', icon: <SupportAgentIcon />, path: '/dashboard/clients' },
-  { text: 'Users', icon: <InterpreterModeIcon />, path: '/dashboard/user' },
-  { text: 'Role', icon: <AdminPanelSettingsIcon />, path: '/dashboard/roles' },
+  { text: 'Home', icon: <HomeRoundedIcon sx={{ fontSize: 38 }} />, path: '/dashboard' },
+  { text: 'Category', icon: <CategoryIcon sx={{ fontSize: 38 }} />, path: '/dashboard/category' },
+  { text: 'Location', icon: <LocationOnIcon sx={{ fontSize: 38 }} />, path: '/dashboard/location' },
+  { text: 'Business', icon: <BusinessIcon sx={{ fontSize: 38 }} />, path: '/dashboard/business' },
+  { text: 'Clients', icon: <SupportAgentIcon sx={{ fontSize: 38 }} />, path: '/dashboard/clients' },
+  { text: 'Users', icon: <InterpreterModeIcon sx={{ fontSize: 38 }} />, path: '/dashboard/user' },
+  { text: 'Role', icon: <AdminPanelSettingsIcon sx={{ fontSize: 38 }} />, path: '/dashboard/roles' },
 ];
 
 export default function SideMenu() {
@@ -56,12 +56,15 @@ export default function SideMenu() {
                     minWidth: '40px',
                   }}
                 >
-                  {item.icon}
+                  <Box sx={{ fontSize: 38 }}>
+                    {item.icon}
+                  </Box>
                 </ListItemIcon>
+
                 <Typography
                   sx={{
                     fontSize: '1rem',
-    fontWeight: 'bold', // reliable bold across all fonts
+                    fontWeight: 'bold', 
                     color: selected ? '#FF8C42' : '#333'
                   }}
                 >
