@@ -1,5 +1,5 @@
 import { BAD_REQUEST } from "../errorCodes.js";
-import { oauthAuthentication, oauthValidation, logoutUsers, handleRefreshTokenRequest } from "../helper/oauthHelper.js";
+import { oauthAuthentication, oauthValidation, logoutUsers, handleRefreshTokenRequest, createClientToken } from "../helper/oauthHelper.js";
 
 export const oauthAction = async (req, res) => {
     try {
@@ -10,6 +10,23 @@ export const oauthAction = async (req, res) => {
         return res.status(BAD_REQUEST.code).send({error:error.message});
     }
 };
+export const oauthClientAction = async (req, res) => {
+  try {
+    const { clientId, clientSecret } = req.body;
+
+    if (!clientId || !clientSecret) {
+      return res.status(BAD_REQUEST.code).send({ error: 'clientId and clientSecret required' });
+    }
+
+    const token = await createClientToken(clientId, clientSecret);
+    res.send(token); // <-- returns accessToken + refreshToken + dummy user
+  } catch (error) {
+    console.error(error);
+    return res.status(BAD_REQUEST.code).send({ error: error.message });
+  }
+};
+
+
 export const oauthReAction = async (req, res) => {
     try {
         const result = await handleRefreshTokenRequest(req, res); 

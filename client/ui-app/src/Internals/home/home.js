@@ -1,36 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Box, Typography } from "@mui/material";
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { clientLogin } from '../../redux/actions/authAction.js';
 
 import './home.css';
 
 const BusinessListing = () => {
+    const dispatch = useDispatch();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [businesses, setBusinesses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-
-    // Sample data - in a real app, this would come from an API
-    //   useEffect(() => {
-    //     const sampleBusinesses = [
-    //       { id: 1, name: "Spice Garden", category: "Food & Beverages", location: "Hyderabad", rating: 4.5 },
-    //       { id: 2, name: "Tech Solutions", category: "Electronics", location: "Hyderabad", rating: 4.2 },
-    //       { id: 3, name: "City Hospital", category: "Health", location: "Hyderabad", rating: 4.7 },
-    //       { id: 4, name: "LearnSmart Academy", category: "Education", location: "Hyderabad", rating: 4.8 },
-    //       { id: 5, name: "Wedding Planners Inc", category: "Wedding & Events", location: "Hyderabad", rating: 4.3 },
-    //       { id: 6, name: "Quick Delivery", category: "Logistics Services", location: "Hyderabad", rating: 4.1 },
-    //       { id: 7, name: "Fashion Hub", category: "Shopping", location: "Hyderabad", rating: 4.4 },
-    //       { id: 8, name: "Green Grocers", category: "Food & Beverages", location: "Hyderabad", rating: 4.6 },
-    //     ];
-
-    //     setBusinesses(sampleBusinesses);
-    //     setIsLoading(false);
-    //   }, []);
+    const [accessToken, setAccessToken] = useState('');
 
     const categories = [
         "Construction Company", "Travels", "Events", "Education", "Hotels",
         "Spa", "Real Estate", "Interior Designer", "Dealers", "CCTV", "Manufacturer", "Hostels"
     ];
+
+    // Fetch client token and businesses
+    useEffect(() => {
+        const fetchBusinesses = async () => {
+            try {
+                // Step 1: Get client token
+                const tokenData = await dispatch(clientLogin());
+                const token = tokenData.accessToken;
+                setAccessToken(token);
+
+                // Step 2: Fetch businesses from protected API
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/businesses`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                setBusinesses(response.data);
+            } catch (err) {
+                console.error("Error fetching businesses:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBusinesses();
+    }, [dispatch]);
 
     const filteredBusinesses = businesses.filter(business => {
         const matchesSearch = business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -77,22 +92,10 @@ const BusinessListing = () => {
 
                         <Box
                             className="search-container"
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 2,
-                                mb: 2,
-                            }}
+                            sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}
                         >
                             <TextField
                                 label="Search for businesses, services..."
-                                variant="outlined"
-                                fullWidth
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <TextField
-                                label="services..."
                                 variant="outlined"
                                 fullWidth
                                 value={searchTerm}
@@ -111,6 +114,7 @@ const BusinessListing = () => {
                 </Box>
             </section>
 
+            {/* Categories Section */}
             <section className="categories">
                 <div className="container">
                     <h3>Popular Categories</h3>
@@ -128,6 +132,7 @@ const BusinessListing = () => {
                 </div>
             </section>
 
+            {/* Businesses */}
             <section className="business-listings">
                 <div className="container">
                     <h3>{selectedCategory === 'All' ? 'All Businesses' : selectedCategory}</h3>
@@ -154,10 +159,7 @@ const BusinessListing = () => {
                                         <p className="location">{business.location}</p>
                                         <div className="rating">
                                             {Array.from({ length: 5 }).map((_, i) => (
-                                                <span
-                                                    key={i}
-                                                    className={i < Math.floor(business.rating) ? 'star filled' : 'star'}
-                                                >
+                                                <span key={i} className={i < Math.floor(business.rating) ? 'star filled' : 'star'}>
                                                     ★
                                                 </span>
                                             ))}

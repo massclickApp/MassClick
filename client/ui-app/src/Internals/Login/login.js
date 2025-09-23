@@ -36,7 +36,7 @@ function ColorSchemeToggle(props) {
   );
 }
 
-export default function Login() {
+export default function Login({setIsAuthenticated}) {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
@@ -50,11 +50,16 @@ export default function Login() {
     dispatch(login(email, password));
   };
 
+
   useEffect(() => {
     if (auth.user && auth.accessToken) {
-      navigate('/dashboard');
+      localStorage.setItem("username", auth.user.username || auth.user.email);
+      localStorage.setItem("accessToken", auth.accessToken);
+      localStorage.setItem("refreshToken", auth.refreshToken);
+      setIsAuthenticated(true);
+      navigate("/dashboard");
     }
-  }, [auth, navigate]);
+  }, [auth, navigate, setIsAuthenticated]);
 
   return (
     <CssVarsProvider theme={customTheme}>

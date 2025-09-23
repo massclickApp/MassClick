@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { relogin } from './redux/actions/authAction.js';
+
 import Dashboard from './Dashboard';
 import Login from './Internals/Login/login.js';
 import User from './Internals/user/Users.js';
@@ -9,21 +12,76 @@ import Category from './Internals/categories/Category.js';
 import Roles from './Internals/Roles/Roles.js';
 import Location from './Internals/location/Location.js';
 import MainGrid from './components/MainGrid.js';
+import PrivateRoute from './PrivateRoute';
+import BusinessListing from './Internals/home/home.js'; 
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const initAuth = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (!accessToken || !refreshToken) {
+        setIsAuthenticated(false);
+        setAuthChecked(true);
+        return;
+      }
+
+      try {
+        const result = await dispatch(relogin());
+        if (result && result.accessToken) {
+          setIsAuthenticated(true);
+        } else {
+          throw new Error("Token refresh failed");
+        }
+      } catch (err) {
+        console.warn("Invalid refresh token, clearing storage");
+        localStorage.clear();
+        setIsAuthenticated(false);
+      } finally {
+        setAuthChecked(true);
+      }
+    };
+
+    initAuth();
+  }, [dispatch]);
+
+  if (!authChecked) {
+    return (
+      <div style={{ textAlign: 'center', marginTop: '20%' }}>
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />}>
-          <Route index element={<MainGrid />} />
-          <Route path="home" element={<MainGrid />} />
-          <Route path="user" element={<User />} />
-          <Route path="clients" element={<Clients />} />
-          <Route path="business" element={<Business />} />
-          <Route path="category" element={<Category />} />
-          <Route path="location" element={<Location />} />
-          <Route path="roles" element={<Roles />} />
+        <Route
+          path="/"
+          element={
+            <Login
+              setIsAuthenticated={setIsAuthenticated}
+              isAuthenticated={isAuthenticated}
+            />
+          }
+        />
+
+        <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
+          <Route path="/dashboard" element={<Dashboard />}>
+            <Route index element={<MainGrid />} />
+            <Route path="home" element={<BusinessListing />} /> 
+            <Route path="user" element={<User />} />
+            <Route path="clients" element={<Clients />} />
+            <Route path="business" element={<Business />} />
+            <Route path="category" element={<Category />} />
+            <Route path="location" element={<Location />} />
+            <Route path="roles" element={<Roles />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

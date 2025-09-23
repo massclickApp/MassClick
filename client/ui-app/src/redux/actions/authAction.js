@@ -9,12 +9,47 @@ export const RELOGIN_REQUEST = "RELOGIN_REQUEST";
 export const RELOGIN_SUCCESS = "RELOGIN_SUCCESS";
 export const RELOGIN_FAILURE = "RELOGIN_FAILURE";
 
+export const CLIENT_LOGIN_REQUEST = 'CLIENT_LOGIN_REQUEST';
+export const CLIENT_LOGIN_SUCCESS = 'CLIENT_LOGIN_SUCCESS';
+export const CLIENT_LOGIN_FAILURE = 'CLIENT_LOGIN_FAILURE';
+
 export const LOGOUT = 'LOGOUT';
 
 const API_URL = process.env.REACT_APP_API_URL;
 const CLIENT_ID = process.env.REACT_APP_OAUTH_CLIENT_ID;
 const CLIENT_SECRET = process.env.REACT_APP_OAUTH_CLIENT_SECRET;
 
+
+
+
+export const clientLogin = () => async (dispatch) => {
+  dispatch({ type: CLIENT_LOGIN_REQUEST });
+
+  try {
+    const response = await axios.post(`${API_URL}/oauth/client`, {
+      clientId: CLIENT_ID,
+      clientSecret: CLIENT_SECRET,
+    });
+
+    const { accessToken, refreshToken, user } = response.data;
+
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+
+    dispatch({
+      type: CLIENT_LOGIN_SUCCESS,
+      payload: { accessToken, refreshToken, user },
+    });
+
+    return response.data; 
+  } catch (error) {
+    dispatch({
+      type: CLIENT_LOGIN_FAILURE,
+      payload: error.response?.data || error.message,
+    });
+    throw error;
+  }
+};
 
 export const login = (username, password) => async (dispatch) => {
   dispatch({ type: LOGIN_REQUEST });

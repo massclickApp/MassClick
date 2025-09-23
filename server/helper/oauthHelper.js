@@ -1,148 +1,142 @@
+// helper/oauthHelper.js
 import OAuth2Server from 'oauth2-server';
 import oauthModel from '../model/oauthModel.js';
 import clientModel from '../model/clientModel.js';
 import { BAD_REQUEST, UNAUTHORIZED } from "../errorCodes.js";
- import { userValidation } from '../helper/loginHelper.js';
-import mongoose from 'mongoose'; 
+import { userValidation } from '../helper/loginHelper.js';
+import mongoose from 'mongoose';
+import crypto from 'crypto';
 
-const getAccessToken = function (token) {
-    return oauthModel.findOne({
-        accessToken: token,
-    }).lean();
-};
+// ---------- OAuth2 Server Model Functions ----------
+const getAccessToken = (token) => oauthModel.findOne({ accessToken: token }).lean();
 
-const getClient = function (clientId, clientSecret) {
-    return clientModel.findOne({
-        clientId: clientId,
-        clientSecret: clientSecret,
-    }).lean();
-};
+const getClient = (clientId, clientSecret) => clientModel.findOne({ clientId, clientSecret }).lean();
 
-const saveToken = async function (token, client, user) {
-    await oauthModel.deleteMany({ 'user.userId': user._id });
+const saveToken = async (token, client, user) => {
+    const userId = user.userId || 'client_user_id';
+
+    // Delete existing token for same user
+    await oauthModel.deleteMany({ 'user.userId': userId });
 
     const tokenInstance = new oauthModel({
         accessToken: token.accessToken,
-        accessTokenExpiresAt: new Date(Date.now() + 20 * 60 * 1000), 
+        accessTokenExpiresAt: token.accessTokenExpiresAt,
         refreshToken: token.refreshToken,
-        refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 
+        refreshTokenExpiresAt: token.refreshTokenExpiresAt,
         client: {
             id: client.id,
             clientId: client.clientId,
         },
         user: {
             userName: user.userName,
-            emailId: user.personalEmail,
-            userId: user._id,
-            userRole: user.role,
-            firstTimeUser: user.firstTimeUser,
-            forgotPassword: user.forgotPassword
+            emailId: user.emailId || null,
+            userId: userId,
+            userRole: user.userRole || 'user',
+            firstTimeUser: user.firstTimeUser || false,
+            forgotPassword: user.forgotPassword || false,
         },
     });
 
-    return tokenInstance.save().then((savedToken) => {
-        if (!savedToken) {
-            console.error('Token not saved');
-        } else {
-            delete savedToken._id;
-            delete savedToken.__v;
-        }
-        return savedToken;
-    });
+    const savedToken = await tokenInstance.save();
+    delete savedToken._id;
+    delete savedToken.__v;
+    return savedToken;
 };
 
-const getUser = function (userName, password) {
-   
-    const data = { userName: userName, password: password }
-    const user = userValidation(data);
-    return user;
-
+const getUser = (userName, password) => {
+    const data = { userName, password };
+    return userValidation(data);
 };
 
+const getRefreshToken = (refreshToken) => oauthModel.findOne({ refreshToken }).lean();
 
-const getRefreshToken = function (refreshToken) {
-    return oauthModel.findOne({
-        refreshToken: refreshToken,
-    }).lean();
-};
+const revokeToken = (token) => oauthModel.deleteOne({ refreshToken: token.refreshToken }).lean();
 
-const revokeToken = function (token) {
-    return oauthModel.deleteOne({
-        refreshToken: token.refreshToken,
-    }).lean();
-};
-
+// ---------- OAuth2 Server Instance ----------
 const oauthtoken = new OAuth2Server({
     model: {
-        getAccessToken: getAccessToken,
-        getClient: getClient,
-        saveToken: saveToken,
-        getUser: getUser,
-        getRefreshToken: getRefreshToken,
-        revokeToken: revokeToken,
+        getAccessToken,
+        getClient,
+        saveToken,
+        getUser,
+        getRefreshToken,
+        revokeToken,
     },
 });
 
-export const oauthValidation = async function (req, res) {
+export const createClientToken = async (clientId, clientSecret) => {
+    const client = await clientModel.findOne({ clientId, clientSecret }).lean();
+    if (!client) throw new Error('Invalid client credentials');
 
+    const user = {
+        userName: 'client_user',
+        emailId: null,
+        userId: 'client_user_id',
+        userRole: 'client',
+        firstTimeUser: false,
+        forgotPassword: false,
+    };
+
+    const accessToken = crypto.randomBytes(32).toString('hex');
+    const refreshToken = crypto.randomBytes(32).toString('hex');
+
+    const tokenObj = {
+        accessToken,
+        refreshToken,
+        accessTokenExpiresAt: new Date(Date.now() + 20 * 60 * 1000), // 20 mins
+        refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+    };
+
+    const savedToken = await saveToken(tokenObj, client, user);
+    return savedToken;
+};
+
+// ---------- OAuth Password Grant ----------
+export const oauthValidation = async (req) => {
     const request = new OAuth2Server.Request(req);
-    const response = new OAuth2Server.Response(res);
-
+    const response = new OAuth2Server.Response(req);
 
     try {
         const tokenInfo = await oauthtoken.token(request, response);
-        // setTimeout(() => {
-        // res.json(tokenInfo);
-        return tokenInfo
-        // }, 1000);
+        return tokenInfo;
     } catch (error) {
-        console.dir(error);
-        return ({error:error.message});
+        return { error: error.message };
     }
 };
 
-export const oauthAuthentication = async function (req, res,next) {
+// ---------- OAuth Authentication Middleware ----------
+export const oauthAuthentication = async (req, res, next) => {
     const request = new OAuth2Server.Request(req);
     const response = new OAuth2Server.Response(res);
-
 
     try {
         const token = await oauthtoken.authenticate(request, response);
         req.authUser = token.user;
         next();
     } catch (err) {
-        console.log('auth error: ', {
-            endpoint: req.originalUrl,
-            msg: err.message,
-        });
         return res.status(UNAUTHORIZED.code).send({ error: err.message });
     }
 };
 
+// ---------- Refresh Token Handler ----------
 export const handleRefreshTokenRequest = async (req, res) => {
     const request = new OAuth2Server.Request(req);
     const response = new OAuth2Server.Response(res);
+
     try {
         const tokenInfo = await oauthtoken.token(request, response);
         res.json(tokenInfo);
     } catch (error) {
-        console.error(error);
-        res.status(error.code || 500).json(error);
+        res.status(error.code || 500).json({ error: error.message });
     }
 };
 
-export const logoutUsers = async function (_id) {
-    try {
-        if (!mongoose.Types.ObjectId.isValid(_id)) {
-            throw new Error('Invalid ID format.');
-        }
-        const result = await oauthModel.findByIdAndDelete(_id);
-        if (!result) {
-            throw new Error(`logout with ID ${_id} not found.`);
-        }
-        return true;
-    } catch (error) {
-        console.error('Error deleting logout document:', error);
-        throw error;
+// ---------- Logout User ----------
+export const logoutUsers = async (_id) => {
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        throw new Error('Invalid ID format.');
     }
-}
+    const result = await oauthModel.findByIdAndDelete(_id);
+    if (!result) throw new Error(`Logout with ID ${_id} not found.`);
+    return true;
+};
