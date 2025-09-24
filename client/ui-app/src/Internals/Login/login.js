@@ -7,8 +7,7 @@ import {
   Button,
   Checkbox,
   Divider,
-  FormControl,
-  FormLabel,
+  InputAdornment,
   IconButton,
   Link,
   TextField,
@@ -24,6 +23,9 @@ import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import GoogleIcon from './googleIcon.js';
 import { useNavigate } from 'react-router-dom';
 import companyLogo from "../../assets/mclogo.png";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
 
 function ColorSchemeToggle({ mode, setMode }) {
   const [mounted, setMounted] = React.useState(false);
@@ -48,11 +50,13 @@ export default function Login({ setIsAuthenticated }) {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const [userName, setUserName] = useState('');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [mode, setMode] = useState('light');
+  const [showPassword, setShowPassword] = useState(false);
 
   const theme = React.useMemo(() =>
     createTheme({
@@ -68,12 +72,12 @@ export default function Login({ setIsAuthenticated }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(login(email, password));
+    dispatch(login(userName, password));
   };
 
   useEffect(() => {
     if (auth.user && auth.accessToken) {
-      localStorage.setItem("username", auth.user.username || auth.user.email);
+      localStorage.setItem("userName", auth.user.userName || auth.user.email);
       localStorage.setItem("accessToken", auth.accessToken);
       localStorage.setItem("refreshToken", auth.refreshToken);
       setIsAuthenticated(true);
@@ -85,7 +89,7 @@ export default function Login({ setIsAuthenticated }) {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, minHeight: '100vh' }}>
-        
+
         {/* Left Side - Login Form */}
         <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', px: 4 }}>
           <Paper elevation={6} sx={{ p: 6, borderRadius: 4, width: { xs: '90%', sm: 450 } }}>
@@ -118,20 +122,34 @@ export default function Login({ setIsAuthenticated }) {
                   label="Username"
                   size="small"
                   variant="outlined"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
                   fullWidth
                   required
                 />
+
                 <TextField
                   label="Password"
                   size="small"
                   variant="outlined"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   fullWidth
                   required
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Checkbox checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember me

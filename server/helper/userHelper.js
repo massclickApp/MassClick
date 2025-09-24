@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb";
 import userModel from "../model/userModel.js"
-import bcrypt from 'bcrypt';
 
 export const createUsers = async function (reqBody = {}) {
     try {
@@ -8,10 +7,6 @@ export const createUsers = async function (reqBody = {}) {
         const data = {
             ...reqBody,
         };
-        if (data.password) {
-            const saltRounds = 10;
-            data.password = await bcrypt.hash(data.password, saltRounds);
-        }
         const usersDocument = new userModel(data);
         const result = await usersDocument.save();
         return result;

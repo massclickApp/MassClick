@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/api/oauth/login', oauthAction);
 router.post('/api/oauth/relogin', oauthReAction )
-router.delete('/api/oauth/logout/:_id', logoutAction)
+router.delete('/api/oauth/logout', logoutAction)
 router.post('/api/oauth/client', oauthClientAction)
 
 export default router; 

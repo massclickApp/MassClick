@@ -43,16 +43,26 @@ const saveToken = async (token, client, user) => {
     return savedToken;
 };
 
-const getUser = (userName, password) => {
-    const data = { userName, password };
-    return userValidation(data);
+const getUser = async (userName, password) => {
+    try {
+        const user = await userValidation(userName, password);
+       
+        return {
+            userId: user._id,
+            userName: user.userName,
+            emailId: user.emailId,
+            role: user.role,
+        };
+    } catch (err) {
+        console.error('Error in getUser:', err);
+        return false;
+    }
 };
 
 const getRefreshToken = (refreshToken) => oauthModel.findOne({ refreshToken }).lean();
 
 const revokeToken = (token) => oauthModel.deleteOne({ refreshToken: token.refreshToken }).lean();
 
-// ---------- OAuth2 Server Instance ----------
 const oauthtoken = new OAuth2Server({
     model: {
         getAccessToken,
@@ -83,8 +93,8 @@ export const createClientToken = async (clientId, clientSecret) => {
     const tokenObj = {
         accessToken,
         refreshToken,
-        accessTokenExpiresAt: new Date(Date.now() + 20 * 60 * 1000), 
-        refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 
+        accessTokenExpiresAt: new Date(Date.now() + 20 * 60 * 1000),
+        refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     };
 
     const savedToken = await saveToken(tokenObj, client, user);
@@ -132,11 +142,11 @@ export const handleRefreshTokenRequest = async (req, res) => {
 };
 
 // ---------- Logout User ----------
-export const logoutUsers = async (_id) => {
-    if (!mongoose.Types.ObjectId.isValid(_id)) {
-        throw new Error('Invalid ID format.');
+export const logoutUsers = async (token) => {
+    const result = await oauthModel.findOneAndDelete({ accessToken: token });
+    if (!result) {
+     
+        return true;
     }
-    const result = await oauthModel.findByIdAndDelete(_id);
-    if (!result) throw new Error(`Logout with ID ${_id} not found.`);
     return true;
 };

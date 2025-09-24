@@ -1,37 +1,35 @@
 import userModel from "../model/userModel.js";
 import oauthModel from '../model/oauthModel.js';
-import bcrypt from 'bcrypt';
 
-export const userValidation = async function (req, res) {
-    const { userName, password } = req;
-    return new Promise(async (resolve, reject) => {
-        try {
-            const user = await userModel.findOne({ userName: userName }).exec(); 
+export const userValidation = async function (userName, password) {
 
-            if (!user) {
-                console.error('User not found');
-                reject({ error: 'User not found', statusCode: 404 });
-                return;
-            }
+    const trimmedUserName = userName.trim();
+    const trimmedPassword = password.trim();
 
-            if (user.hide) {
-                console.error('User is blocked');
-                reject({ error: 'User is blocked', statusCode: 401 });
-                return;
-            }
+    try {
+        const user = await userModel.findOne({ userName: trimmedUserName }).exec();
 
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                console.error('Invalid password');
-                reject({ error: 'Invalid password', statusCode: 401 });
-                return;
-            }
-
-            await oauthModel.deleteMany({ 'user.userName': userName }).exec();
-            resolve(user);
-        } catch (err) {
-            console.error('Error finding/updating user:', err);
-            reject({ error: 'Internal server error', statusCode: 500 });
+        if (!user) {
+            console.error('User not found');
+            throw { error: 'User not found', status: 404 };
         }
-    });
+
+        if (user.hide) {
+            console.error('User is blocked');
+            throw { error: 'User is blocked', status: 401 };
+        }
+
+        if (user.password !== trimmedPassword) {
+            console.error('Invalid password');
+            throw { error: 'Invalid password', status: 401 };
+        }
+
+        await oauthModel.deleteMany({ 'user.userName': trimmedUserName }).exec();
+
+        return user;
+
+    } catch (err) {
+        console.error('Error finding/updating user:', err);
+        throw err.error ? err : { error: 'Internal server error', status: 500 };
+    }
 };

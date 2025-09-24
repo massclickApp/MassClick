@@ -30,7 +30,6 @@ export default function Roles() {
     const { roles = [], loading, error } = useSelector(
         (state) => state.rolesReducer || {}
     );
-    console.log("roles data:", roles);
     
     const [errors, setErrors] = useState({});
 

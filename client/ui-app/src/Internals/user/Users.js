@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers, createUser, editUser, deleteUser } from "../../redux/actions/userAction.js";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
+import { getAllRoles } from "../../redux/actions/rolesAction.js";
 import {
   Box,
   Button,
@@ -16,19 +17,28 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  MenuItem,
+  InputAdornment
 } from "@mui/material";
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 export default function User() {
   const dispatch = useDispatch();
   const { users = [], loading, error } = useSelector((state) => state.userReducer || {});
+  const { roles = [] } = useSelector(
+    (state) => state.rolesReducer || {}
+  );
   const [isEditMode, setIsEditMode] = useState(false);
   const [editUserId, setEditUserId] = useState(null);
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     userName: "",
+    password: "",
     contact: "",
     businessLocation: "",
     businessCategory: "",
@@ -42,6 +52,7 @@ export default function User() {
 
   useEffect(() => {
     dispatch(getAllUsers());
+    dispatch(getAllRoles());
   }, [dispatch]);
 
   const handleChange = (e) => {
@@ -49,9 +60,14 @@ export default function User() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+
     if (isEditMode && editUserId) {
       dispatch(editUser(editUserId, formData))
         .then(() => {
@@ -68,10 +84,12 @@ export default function User() {
         .catch((err) => console.error("Create user failed:", err));
     }
   };
+
   const validateForm = () => {
     let newErrors = {};
     if (!formData.userName) newErrors.userName = "User Name is required";
     if (!formData.contact) newErrors.contact = "Contact is required";
+    if (!formData.password) newErrors.password = "Password is required";
     if (!formData.emailId) newErrors.emailId = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(formData.emailId)) newErrors.emailId = "Invalid email format";
     if (!formData.role) newErrors.role = "Role is required";
@@ -81,9 +99,11 @@ export default function User() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleEdit = (row) => {
     setFormData({
       userName: row.userName,
+      password: "", 
       contact: row.contact,
       role: row.role,
       emailId: row.emailId,
@@ -97,14 +117,17 @@ export default function User() {
   const resetForm = () => {
     setFormData({
       userName: "",
+      password: "",
       contact: "",
       businessLocation: "",
       businessCategory: "",
       emailId: "",
       role: "",
     });
+    setErrors({});
     setEditUserId(null);
     setIsEditMode(false);
+    setShowPassword(false);
   };
 
   const handleDeleteClick = (row) => {
@@ -134,13 +157,13 @@ export default function User() {
     .map((user, index) => ({
       id: user._id || index,
       userName: user.userName,
+      password: user.password,
       contact: user.contact,
       emailId: user.emailId,
       role: user.role,
       businessLocation: user.businessLocation || "-",
       businessCategory: user.businessCategory || "-",
       isActive: user.isActive,
-
     }));
 
   const userList = [
@@ -170,8 +193,9 @@ export default function User() {
 
   const fields = [
     { label: "UserName", name: "userName", required: true, type: "text" },
+    { label: "Password", name: "password", required: true, type: "password" },
     { label: "Contact", name: "contact", required: true, type: "text" },
-    { label: "Role", name: "role", required: true, type: "text" },
+    { label: "Role", name: "role", required: true, type: "select" },
     { label: "EmailId", name: "emailId", required: true, type: "email" },
     { label: "BusinessLocation", name: "businessLocation", required: true, type: "text" },
     { label: "BusinessCategory", name: "businessCategory", required: true, type: "text" },
@@ -186,26 +210,84 @@ export default function User() {
         <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             {fields.map((field, i) => (
-              <Grid item xs={12} sm={field.name === "userName" || field.name === "contact" ? 6 : 12} key={i}>
-                <TextField
-                  fullWidth
-                  type={field.type}
-                  label={field.label}
-                  name={field.name}
-                  variant="standard"
-                  value={formData[field.name]}
-                  onChange={handleChange}
-                  error={Boolean(errors[field.name])}
-                  helperText={errors[field.name] || ""}
-                  sx={{
-                    "& .MuiInputBase-root": { height: 50, fontSize: "1.1rem" },
-                    "& .MuiInputLabel-root": { fontSize: "1rem" },
-                  }}
-                />
+              <Grid
+                item
+                xs={12}
+                sm={field.name === "userName" || field.name === "contact" || field.name === "password" ? 4 : 12}
+                key={i}
+              >
+                {field.type === "select" && field.name === "role" ? (
+                  <TextField
+                    select
+                    fullWidth
+                    label="Role"
+                    name="role"
+                    variant="standard"
+                    value={formData.role}
+                    onChange={handleChange}
+                    error={Boolean(errors.role)}
+                    helperText={errors.role || ""}
+                    style={{ minWidth: 230 }}
+                    sx={{
+                      "& .MuiInputBase-root": { height: 50, fontSize: "1.1rem" },
+                      "& .MuiInputLabel-root": { fontSize: "1rem" },
+                    }}
+                  >
+                    {roles.map((role) => (
+                      <MenuItem key={role._id} value={role.roleName}>
+                        {role.roleName}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                ) : field.type === "password" ? (
+                  <TextField
+                    fullWidth
+                    type={showPassword ? "text" : "password"}
+                    label="Password"
+                    name="password"
+                    variant="standard"
+                    value={formData.password || ""}
+                    placeholder={isEditMode ? "Enter new password" : ""}
+                    onChange={handleChange}
+                    error={Boolean(errors.password)}
+                    helperText={errors.password || ""}
+                    autoComplete="new-password"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end" sx={{ mr: 0 }}>
+                          <IconButton onClick={handleClickShowPassword} edge="end" sx={{ p: 0.25 }}>
+                            {showPassword ? <VisibilityOff sx={{ fontSize: 15 }} /> : <Visibility sx={{ fontSize: 15 }} />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      "& .MuiInputBase-root": { height: 50, fontSize: "1rem" },
+                      "& .MuiInputLabel-root": { fontSize: "1rem" },
+                    }}
+                  />
+                ) : (
+                  <TextField
+                    fullWidth
+                    type={field.type}
+                    label={field.label}
+                    name={field.name}
+                    variant="standard"
+                    value={formData[field.name]}
+                    onChange={handleChange}
+                    error={Boolean(errors[field.name])}
+                    helperText={errors[field.name] || ""}
+                    autoComplete={field.name === "userName" ? "off" : "on"}
+                    sx={{
+                      "& .MuiInputBase-root": { height: 50, fontSize: "1.1rem" },
+                      "& .MuiInputLabel-root": { fontSize: "1rem" },
+                    }}
+                  />
+                )}
               </Grid>
             ))}
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-end', sm: 'flex-start' }, mt: 4 }}>
+              <Box sx={{ display: "flex", justifyContent: { xs: "flex-end", sm: "flex-start" }, mt: 4 }}>
                 <Button type="submit" variant="contained" disabled={loading} sx={{ minWidth: 150 }}>
                   {loading ? <CircularProgress size={24} /> : isEditMode ? "Update User" : "Create User"}
                 </Button>
@@ -225,7 +307,6 @@ export default function User() {
         )}
       </Paper>
 
-      {/* User Table */}
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>
           User Table
@@ -235,7 +316,6 @@ export default function User() {
         </Box>
       </Paper>
 
-      {/* 🔹 Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>

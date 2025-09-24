@@ -48,11 +48,14 @@ export const oauthToken = async (req, res) => {
 };
 export const logoutAction = async (req, res) => {
     try {
-        const { _id } = req.params;
-        const result = await logoutUsers(_id);
-        res.send(result);
+        const token = req.headers.authorization?.split(' ')[1]; 
+        if (!token) {
+            return res.status(UNAUTHORIZED.code).send('No token provided.');
+        }
+        await logoutUsers(token);
+        res.status(200).send({ message: 'Logout successful' });
     } catch (error) {
         console.error(error);
         return res.status(BAD_REQUEST.code).send(error.message);
     }
-}
+};

@@ -10,7 +10,7 @@ import CustomizedDataGrid from './CustomizedDataGrid';
 // import StatCard, { StatCardProps } from './StatCard';
 import { useSelector, useDispatch } from "react-redux";
 import { getAllBusinessList, toggleBusinessStatus } from "../redux/actions/businessListAction"; // your thunk/action
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
 
 import {
   Paper,
