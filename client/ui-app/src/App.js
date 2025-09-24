@@ -3,6 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { relogin } from './redux/actions/authAction.js';
 
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline'; // Optional: for consistent baseline styles
+import theme from './Internals/clientComponent/theme.js'
+
 import Dashboard from './Dashboard';
 import Login from './Internals/Login/login.js';
 import User from './Internals/user/Users.js';
@@ -13,7 +17,7 @@ import Roles from './Internals/Roles/Roles.js';
 import Location from './Internals/location/Location.js';
 import MainGrid from './components/MainGrid.js';
 import PrivateRoute from './PrivateRoute';
-import BusinessListing from './Internals/home/home.js';
+import BusinessListing from './Internals/clientComponent/home.js';
 import { SnackbarProvider } from 'notistack';
 
 function App() {
@@ -60,39 +64,42 @@ function App() {
   }
 
   return (
-     <SnackbarProvider
-      maxSnack={3}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      autoHideDuration={5000} 
-      preventDuplicate
-    >
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Login
-              setIsAuthenticated={setIsAuthenticated}
-              isAuthenticated={isAuthenticated}
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <SnackbarProvider
+        maxSnack={3}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        autoHideDuration={5000}
+        preventDuplicate
+      >
+        <Router>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Login
+                  setIsAuthenticated={setIsAuthenticated}
+                  isAuthenticated={isAuthenticated}
+                />
+              }
             />
-          }
-        />
-        <Route path="home" element={<BusinessListing />} />
+            <Route path="home" element={<BusinessListing />} />
 
-        <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
-          <Route path="/dashboard" element={<Dashboard />}>
-            <Route index element={<MainGrid />} />
-            <Route path="user" element={<User />} />
-            <Route path="clients" element={<Clients />} />
-            <Route path="business" element={<Business />} />
-            <Route path="category" element={<Category />} />
-            <Route path="location" element={<Location />} />
-            <Route path="roles" element={<Roles />} />
-          </Route>
-        </Route>
-      </Routes>
-    </Router>
-    </SnackbarProvider>
+            <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
+              <Route path="/dashboard" element={<Dashboard />}>
+                <Route index element={<MainGrid />} />
+                <Route path="user" element={<User />} />
+                <Route path="clients" element={<Clients />} />
+                <Route path="business" element={<Business />} />
+                <Route path="category" element={<Category />} />
+                <Route path="location" element={<Location />} />
+                <Route path="roles" element={<Roles />} />
+              </Route>
+            </Route>
+          </Routes>
+        </Router>
+      </SnackbarProvider>
+    </ThemeProvider>
   );
 }
 
