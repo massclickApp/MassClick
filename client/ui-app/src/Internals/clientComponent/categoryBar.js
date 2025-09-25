@@ -1,21 +1,27 @@
-// CategoryBar.js
-import React, { useState } from 'react';
-import { Box, Container, Button, Select, MenuItem, FormControl, IconButton, useMediaQuery, Menu } from '@mui/material';
-import CateringDiningIcon from '@mui/icons-material/RestaurantMenu';
-import ListAltIcon from '@mui/icons-material/ListAlt';
+import React, { useState } from "react";
+import {
+    Box,
+    Button,
+    Select,
+    MenuItem,
+    FormControl,
+    IconButton,
+    Menu,
+    Typography,
+} from "@mui/material";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import CampaignIcon from '@mui/icons-material/Campaign';
-import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
-import MI from '../../assets/Mi.png';
+import CampaignIcon from "@mui/icons-material/Campaign";
+import MailIcon from "@mui/icons-material/Mail";
+import MenuIcon from "@mui/icons-material/Menu";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import MI from "../../assets/Mi.png";
+import AddIcon from '@mui/icons-material/Add';
 
 const categories = [
-    { name: 'Language', icon: <CateringDiningIcon /> },
-    { name: 'Investor Relation', icon: null },
-    { name: 'Leads', icon: <MailIcon /> },
-    { name: 'Advertise', icon: <CampaignIcon /> },
-    { name: 'Free Listing', icon: <ListAltIcon /> },
-    { name: '', icon: <NotificationsIcon /> },
+    { name: "Leads", icon: <MailIcon /> },
+    { name: "Advertise", icon: <CampaignIcon /> },
+    { name: "Free Listing", icon: <ListAltIcon /> },
 ];
 
 const languages = [
@@ -23,163 +29,314 @@ const languages = [
     { name: "English", nativeName: "English" },
     { name: "Hindi", nativeName: "हिन्दी" },
     { name: "Kannada", nativeName: "ಕನ್ನಡ" },
-    { name: "Telugu", nativeName: "తెలుగు" }
+    { name: "Telugu", nativeName: "తెలుగు" },
 ];
 
 const CategoryBar = () => {
-    const [selectedLanguage, setSelectedLanguage] = useState('English');
+    const [selectedLanguage, setSelectedLanguage] = useState("English");
     const [anchorEl, setAnchorEl] = useState(null);
-    const isMobile = useMediaQuery('(max-width:600px)');
 
-    const handleMenuClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleCategoryClick = (categoryName) => {
-        console.log(`Clicked on: ${categoryName}`);
-        handleMenuClose();
-    };
+    const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+    const handleMenuClose = () => setAnchorEl(null);
 
     return (
-        <Box sx={{ bgcolor: 'white', borderBottom: '1px solid #e0e0e0', py: 1 }}>
-            <Container
-                maxWidth="lg"
+        <Box
+            sx={{
+                bgcolor: "white",
+                py: { xs: 1.5, sm: 2 },
+                px: { xs: 2.5, sm: 4, md: 6 },
+                position: "sticky",
+                top: 0,
+                zIndex: 1100,
+                boxShadow: "0 8px 25px rgba(0, 0, 0, 0.1)", // Top-notch shadow
+                borderBottom: "none",
+                transition: "box-shadow 0.3s ease-in-out",
+            }}
+        >
+            <Box
                 sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'nowrap',
-                    gap: 1
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: { xs: 2, sm: 3 },
                 }}
             >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                {/* Logo + Brand */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1.5, sm: 2 } }}>
+                    <Box
+                        sx={{
+                            width: { xs: 40, sm: 48 },
+                            height: { xs: 40, sm: 48 },
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            bgcolor: "#fff",
+                            boxShadow: "0 6px 15px rgba(234, 109, 17, 0.4)",
+                            transition: "transform 0.3s ease",
+                            "&:hover": {
+                                transform: "scale(1.05)",
+                            },
+                        }}
+                    >
                         <img
                             src={MI}
                             alt="Logo"
                             style={{
-                                width: isMobile ? 28 : 40,
-                                height: isMobile ? 28 : 40,
-                                borderRadius: '50%',
-                                objectFit: 'cover',
-                                boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
+                                width: "100%",
+                                height: "100%",
+                                borderRadius: "50%",
+                                objectFit: "cover",
                             }}
                         />
-                        <span style={{
-                            fontSize: isMobile ? '1.2rem' : '1.8rem',
-                            color: '#ea6d11',
-                            fontWeight: 700
-                        }}>
-                            Mass<span style={{ color: '#ff9c3b' }}>click</span>
-                        </span>
                     </Box>
+                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                        <Typography
+                            variant="h5"
+                            sx={{
+                                fontWeight: 800,
+                                fontSize: { xs: "1.2rem", sm: "1.5rem", md: "1.8rem" },
+                                letterSpacing: "0.5px",
+                                lineHeight: 1.1,
+                                background: "linear-gradient(45deg, #FF8C00, #FFA500)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                            }}
+                        >
+                            Mass<Box component="span">click</Box>
+                        </Typography>
+                        <Typography
+                            sx={{
+                                fontSize: { xs: "0.75rem", sm: "0.9rem" },
+                                color: "text.secondary",
+                                fontWeight: 400,
+                                mt: 0.5,
+                            }}
+                        >
+                            India's Leading Local Search Engine
+                        </Typography>
+                    </Box>
+                </Box>
 
-                    <FormControl size="small" sx={{ minWidth: 80, flexShrink: 0 }}>
+                {/* Desktop Navigation */}
+                <Box
+                    sx={{
+                        display: { xs: "none", sm: "flex" },
+                        alignItems: "center",
+                        gap: { sm: 2, md: 3 },
+                        flexGrow: 1,
+                        justifyContent: "center",
+                    }}
+                >
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
                         <Select
                             value={selectedLanguage}
                             onChange={(e) => setSelectedLanguage(e.target.value)}
-                            displayEmpty
-                            sx={{ fontSize: isMobile ? '0.7rem' : '0.9rem' }}
+                            sx={{
+                                fontSize: "1rem",
+                                fontWeight: 500,
+                                borderRadius: "30px",
+                                bgcolor: "#f5f5f5",
+                                color: "text.primary",
+                                "& .MuiSelect-select": { py: 1, px: 2.5 },
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                                "&:hover": {
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                                },
+                                "& fieldset": { border: "none" },
+                            }}
                         >
-                            {languages.map(lang => (
-                                <MenuItem key={lang.name} value={lang.name}>{lang.nativeName}</MenuItem>
+                            {languages.map((lang) => (
+                                <MenuItem key={lang.name} value={lang.name} sx={{ fontSize: "1rem" }}>
+                                    {lang.nativeName}
+                                </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
+
+                    {/* Categories */}
+                    {categories.map((category, index) => (
+                        <Button
+                            key={index}
+                            variant="text"
+                            startIcon={category.icon}
+                            sx={{
+                                color: "text.primary",
+                                fontWeight: 600,
+                                textTransform: "none",
+                                fontSize: "1rem",
+                                px: 2.5,
+                                py: 1,
+                                position: "relative",
+                                transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                                "&:hover": {
+                                    color: "#F7941D",
+                                    bgcolor: "transparent",
+                                    transform: "translateY(-3px)",
+                                },
+                                "&:after": {
+                                    content: '""',
+                                    position: "absolute",
+                                    bottom: 0,
+                                    left: "50%",
+                                    width: 0,
+                                    height: "2px",
+                                    bgcolor: "#F7941D",
+                                    transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                                    transform: "translateX(-50%)",
+                                },
+                                "&:hover:after": {
+                                    width: "80%",
+                                },
+                            }}
+                        >
+                            {category.name}
+                        </Button>
+                    ))}
                 </Box>
-                
-                {isMobile && (
-                    <IconButton
-                        sx={{ color: 'black' }}
-                        onClick={handleMenuClick}
-                        aria-label="menu"
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                )}
-                
-                {isMobile && (
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                    >
-                        {categories.map((category, index) => {
-                            if (category.name === 'Language' || category.name === '') return null;
-                            return (
-                                <MenuItem key={index} onClick={() => handleCategoryClick(category.name)}>
-                                    {category.icon && category.icon}
-                                    <Box component="span" sx={{ ml: 1 }}>{category.name}</Box>
-                                </MenuItem>
-                            );
-                        })}
-                    </Menu>
-                )}
 
-                {!isMobile && (
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        overflowX: 'auto',
-                        gap: 1,
-                        flexGrow: 1,
-                        ml: 1,
-                        scrollbarWidth: 'thin',
-                        '&::-webkit-scrollbar': { height: 5 },
-                        '&::-webkit-scrollbar-thumb': { backgroundColor: '#ccc', borderRadius: 3 }
-                    }}>
-                        {categories.map((category, index) => {
-                            if (category.name === 'Language') return null;
-                            if (!category.name) {
-                                return (
-                                    <IconButton key={index} sx={{ color: 'black', flexShrink: 0 }}>
-                                        {category.icon}
-                                    </IconButton>
-                                );
-                            }
-                            return (
-                                <Button
-                                    key={index}
-                                    variant="text"
-                                    startIcon={category.icon}
-                                    sx={{
-                                        color: 'black',
-                                        fontWeight: 400,
-                                        px: 2,
-                                        py: 0.8,
-                                        minWidth: 'auto',
-                                        flexShrink: 0,
-                                        fontSize: '0.9rem'
-                                    }}
-                                >
-                                    {category.name}
-                                </Button>
-                            );
-                        })}
-                    </Box>
-                )}
-
-                {/* Login Button at the end */}
-                <Button
-                    variant="contained"
+                <Box
                     sx={{
-                        backgroundColor: '#1976d2',
-                        color: 'white',
-                        textTransform: 'none',
-                        fontSize: isMobile ? '0.7rem' : '0.9rem',
-                        py: isMobile ? 0.4 : 0.8,
-                        px: isMobile ? 1.5 : 3,
-                        '&:hover': { backgroundColor: '#115293' },
-                        flexShrink: 0
+                        display: { xs: "none", sm: "flex" },
+                        alignItems: "center",
+                        gap: { sm: 1.5, md: 2 },
                     }}
                 >
-                    {isMobile ? 'Login' : 'Login / Signup'}
-                </Button>
-            </Container>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        sx={{
+                            background: "linear-gradient(45deg, #FF6F00, #F7941D)",
+                            color: "white",
+                            textTransform: "none",
+                            fontSize: { xs: "0.9rem", sm: "1rem" },
+                            borderRadius: "30px",
+                            px: { xs: 2.5, sm: 3.5 },
+                            py: { xs: 1, sm: 1.2 },
+                            whiteSpace: "nowrap",
+                            boxShadow: "0 10px 30px rgba(255, 123, 0, 0.4)",
+                            transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                            "&:hover": {
+                                background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)",
+                                transform: "translateY(-3px)",
+                                boxShadow: "0 15px 40px rgba(255, 123, 0, 0.5)",
+                            },
+                        }}
+                    >
+                        Add Your Business
+                    </Button>
+
+                    {/* Icons */}
+                    <IconButton
+                        sx={{
+                            color: "gray",
+                            bgcolor: "rgba(0,0,0,0.04)",
+                            width: 48,
+                            height: 48,
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                color: "white",
+                                background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
+                                boxShadow: "0 4px 12px rgba(234,109,17,0.35)",
+                                transform: "scale(1.1)",
+                            },
+                        }}
+                    >
+                        <NotificationsIcon sx={{ fontSize: 26 }} />
+                    </IconButton>
+                    <IconButton
+                        sx={{
+                            color: "gray",
+                            bgcolor: "rgba(0,0,0,0.04)",
+                            width: 48,
+                            height: 48,
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                color: "white",
+                                background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
+                                boxShadow: "0 4px 12px rgba(234,109,17,0.35)",
+                                transform: "scale(1.1)",
+                            },
+                        }}
+                    >
+                        <AccountCircleIcon sx={{ fontSize: 28 }} />
+                    </IconButton>
+                </Box>
+
+                {/* Mobile Navigation */}
+                <Box
+                    sx={{
+                        display: { xs: "flex", sm: "none" },
+                        alignItems: "center",
+                        gap: 2,
+                    }}
+                >
+                    <Button
+                        variant="contained"
+                        sx={{
+                            background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
+                            color: "white",
+                            textTransform: "none",
+                            fontSize: "0.85rem",
+                            borderRadius: "20px",
+                            px: 2.5,
+                            py: 1,
+                            whiteSpace: "nowrap",
+                            boxShadow: "0 3px 10px rgba(234,109,17,0.35)",
+                            "&:hover": { background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)" },
+                        }}
+                    >
+                        Add Your Business
+                    </Button>
+                    <IconButton
+                        sx={{
+                            color: "text.primary",
+                            display: { xs: "inline-flex", sm: "none" },
+                        }}
+                        onClick={handleMenuClick}
+                    >
+                        <MenuIcon sx={{ fontSize: 28 }} />
+                    </IconButton>
+                </Box>
+            </Box>
+
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                <MenuItem disabled>
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <Select
+                            value={selectedLanguage}
+                            onChange={(e) => setSelectedLanguage(e.target.value)}
+                        >
+                            {languages.map((lang) => (
+                                <MenuItem key={lang.name} value={lang.name}>
+                                    {lang.nativeName}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </MenuItem>
+                {categories.map((category, index) => (
+                    <MenuItem key={index} onClick={handleMenuClose}>
+                        {category.icon}
+                        <Box component="span" sx={{ ml: 1 }}>
+                            {category.name}
+                        </Box>
+                    </MenuItem>
+                ))}
+                <MenuItem onClick={handleMenuClose}>
+                    <NotificationsIcon />
+                    <Box component="span" sx={{ ml: 1 }}>
+                        Notifications
+                    </Box>
+                </MenuItem>
+                <MenuItem onClick={handleMenuClose}>
+                    <AccountCircleIcon />
+                    <Box component="span" sx={{ ml: 1 }}>
+                        Account
+                    </Box>
+                </MenuItem>
+            </Menu>
         </Box>
     );
 };

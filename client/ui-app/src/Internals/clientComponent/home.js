@@ -1,20 +1,16 @@
-// src/pages/LandingPage.js
 import React, { useState } from 'react';
-import { Box, Container, Drawer, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Drawer, List, ListItem, ListItemText } from '@mui/material';
 
-// Import the new components
-import Header from '../clientComponent/header.js';
+// Import your components
 import CategoryBar from '../clientComponent/categoryBar.js';
 import HeroSection from '../clientComponent/heroSection.js';
 import FeaturedServices from '../clientComponent/featureService.js';
-import ServiceCardsGrid from '../clientComponent/serviceCard.js';
+import ServiceCardsGrid from '../clientComponent/serviceCard.js'; // Assuming this is another component
 
 const LandingPage = () => {
   const [selectedLocation, setSelectedLocation] = useState('Trichy');
   const [searchTerm, setSearchTerm] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-
 
   const handleMobileMenuClose = () => {
     setMobileMenuOpen(false);
@@ -33,8 +29,7 @@ const LandingPage = () => {
   );
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', width: '100%', px: 3 }}>
-
+    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', width: '100%' }}>
       <Drawer
         anchor="right"
         open={mobileMenuOpen}
@@ -44,23 +39,21 @@ const LandingPage = () => {
       </Drawer>
 
       <CategoryBar />
-
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <HeroSection
-          selectedLocation={selectedLocation}
-          setSelectedLocation={setSelectedLocation}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-        />
-
-        <Box sx={{ mt: 4 }}>
-          <FeaturedServices />
-        </Box>
-
-        {/* <Box sx={{ mt: 4 }}>
-          <ServiceCardsGrid />
-        </Box> */}
-      </Container>
+      <HeroSection
+        selectedLocation={selectedLocation}
+        setSelectedLocation={setSelectedLocation}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
+      
+    
+      <Box sx={{ mt: 4, mb: 4, px: { xs: 2, sm: 4, md: 6 } }}>
+        <FeaturedServices />
+      </Box>
+<Box sx={{ mt: 4, mb: 4, px: { xs: 2, sm: 4, md: 6 } }}>
+        <ServiceCardsGrid />
+      </Box>
+      
     </Box>
   );
 };
