@@ -1,0 +1,248 @@
+/* --- Base Carousel Container --- */
+.carousel-container {
+    position: relative;
+    margin: 60px auto; /* Increased margin for breathing room */
+    padding: 20px 0;
+    max-width: 1530px;
+     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 0 2px rgba(0, 0, 0, 0.05); 
+    border-radius: 16px; /* Larger radius for a modern soft edge */
+    background-color: #f7f7f7; /* Very light background for contrast */
+    overflow: hidden;
+}
+
+/* --- Cards Wrapper (The Scrollable Area) --- */
+.cards-wrapper {
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 20px; /* Increased gap for better visual separation */
+    scroll-snap-type: x mandatory; 
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 0 20px; /* Consistent side padding for flow */
+}
+.cards-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- Individual Card Styling --- */
+.card {
+    flex: 0 0 auto; 
+    width: 90%; 
+    max-width: 320px; /* Slightly tighter maximum width */
+    /* Deeper, more noticeable shadow */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); 
+    border-radius: 12px;
+    overflow: hidden;
+    scroll-snap-align: start; 
+    background-color: white;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease-out; /* Smoother, bouncier transition */
+}
+
+.card:hover {
+    transform: translateY(-8px); /* More pronounced lift */
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25); /* Stronger shadow on hover */
+}
+
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: white;
+    color: #E67E22;
+    /* Use the orange brand color for icons */
+    border: 1px solid #E67E22;
+    /* Border in brand color */
+    border-radius: 50%;
+    width: 45px;
+    /* Slightly larger icon */
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    transition: all 0.2s ease-in-out;
+    opacity: 0.9;
+}
+
+.nav-arrow:hover {
+    background-color: #E67E22;
+    color: white;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nav-arrow.right {
+    right: 5px;
+    /* Closer to the edge */
+}
+
+.nav-arrow.left {
+    left: 5px;
+    /* New left arrow position */
+}
+
+/* --- Image Section --- */
+.card-image-wrapper {
+    height: 180px; /* Slightly reduced height for a wider ratio look */
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease; /* Transition for zoom effect */
+}
+
+.card:hover .card-image {
+    transform: scale(1.05); /* Subtle zoom on hover for visual appeal */
+}
+
+/* --- Content Section (Orange Area) --- */
+.card-content {
+    padding: 25px 20px; /* More vertical padding */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 120px; 
+    justify-content: space-between;
+}
+
+.card-title {
+    margin-top: 0;
+    margin-bottom: 20px; /* Increased space below title */
+    font-size: 1.6rem; /* Slightly larger title */
+    font-weight: 800; /* Bolder font weight */
+    letter-spacing: 0.5px; /* Slight letter spacing for polish */
+    text-transform: uppercase;
+}
+
+/* --- Enquire Button --- */
+.enquire-button {
+    background-color: white;
+    color: #E67E22;
+    border: none;
+    border-radius: 6px; /* Slightly larger border radius */
+    padding: 12px 25px; /* More comfortable padding */
+    font-size: 0.95rem; 
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); /* Subtle lift effect */
+}
+
+.enquire-button:hover {
+    background-color: #fcece3; /* Very light orange background on hover */
+    color: #cc6714; /* Darker orange text on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Navigation Arrow Styling (Refined Look) --- */
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    
+    background-color: white;
+    color: #E67E22; 
+    border: 1px solid #E67E22;
+    border-radius: 50%;
+    width: 50px; /* Slightly larger arrow button for presence */
+    height: 50px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    display: none; 
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-arrow:hover {
+    background-color: #E67E22;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-50%) scale(1.05); /* Subtle scale up on hover */
+}
+
+/* Ensure the icon itself is large and visible */
+.nav-arrow .MuiSvgIcon-root {
+    font-size: 2.2rem !important; /* Larger icon inside the button */
+    /* Add a slight rotation for better visual flow */
+    transition: transform 0.3s ease;
+}
+
+.nav-arrow.left .MuiSvgIcon-root {
+     transform: translateX(-1px); /* Slight shift left */
+}
+
+.nav-arrow.right .MuiSvgIcon-root {
+     transform: translateX(1px); /* Slight shift right */
+}
+
+.nav-arrow.right {
+    right: 15px; /* Moved slightly further from the edge */
+}
+
+.nav-arrow.left {
+    left: 15px; /* Moved slightly further from the edge */
+}
+
+/* --- RESPONSIVENESS (Media Queries) --- */
+
+/* Mobile View (Below 600px): Hide arrows and rely on swipe */
+.nav-arrow {
+    display: none;
+}
+
+/* --- RESPONSIVENESS (Media Queries) --- */
+
+/* Tablet View (e.g., width > 600px) */
+@media (min-width: 600px) {
+.carousel-container .nav-arrow {
+        display: flex; 
+    }
+    /* Display two cards at a time, making the carousel view smaller */
+    .card {
+        width: calc(50% - 10px);
+        /* Two cards plus the gap */
+    }
+
+    /* Show the arrow on tablets and desktops */
+    .nav-arrow {
+        display: flex;
+    }
+
+     .cards-wrapper {
+        padding: 0 70px; /* More padding to clear the 50px arrow button + margin */
+    }
+}
+
+/* Desktop View (e.g., width > 1024px) */
+@media (min-width: 1024px) {
+
+    /* Display four cards at a time, matching the original design */
+    .card {
+        width: calc(25% - 15px); /* Adjusted for the 20px gap */
+        max-width: none;
+    }
+
+    /* Hide the arrow since all 4 cards will likely fit on a desktop screen */
+    /* Re-enable if you have more than 4 cards */
+     .cards-wrapper {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory; 
+        padding: 0 70px;
+    }
+    
+    /* Keep the arrows visible for more than 4 cards */
+   .carousel-container .nav-arrow {
+        display: flex;
+    }
+
+}

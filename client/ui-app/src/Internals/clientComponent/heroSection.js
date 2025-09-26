@@ -7,11 +7,14 @@ import {
     IconButton,
     Autocomplete,
     Container,
-    TextField
+    TextField,
+    ListItemButton, // 💡 ADDED: For the list items and the Detect Location button
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MicIcon from "@mui/icons-material/Mic";
+import LocationSearchingIcon from "@mui/icons-material/LocationSearching"; // 💡 ADDED: For the Detect Location header icon
+import TrendingUpIcon from "@mui/icons-material/TrendingUp"; // 💡 ADDED: For the Category trend icon
 import { styled } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllLocation } from "../../redux/actions/locationAction";
@@ -44,6 +47,87 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
     },
 }));
 
+// --- 💡 SOLUTION: LocationListbox Definition ---
+const LocationListbox = React.forwardRef(function ListboxComponent(props, ref) {
+    const { children, ...other } = props;
+    const orangeIconStyle = { color: '#ea6d11', fontSize: 20 };
+
+    return (
+        <Box ref={ref} {...other} sx={{ padding: 0, borderRadius: '8px', overflow: 'hidden' }}>
+            {/* --- Detect Location Header --- */}
+            <ListItemButton
+                // You would implement your geo-location detection logic here
+                onClick={() => console.log('Detect Location clicked')}
+                sx={{
+                    padding: '12px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderBottom: '1px solid #eee',
+                    '&:hover': {
+                        backgroundColor: 'rgba(234, 109, 17, 0.05)', // Light orange hover
+                    }
+                }}
+            >
+                <LocationSearchingIcon sx={{ ...orangeIconStyle, marginRight: 1 }} />
+                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                    Detect Location
+                </Typography>
+            </ListItemButton>
+
+            {/* --- TRENDING AREAS Title --- */}
+            <Typography
+                variant="caption"
+                sx={{
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    color: 'gray',
+                    padding: '8px 16px 4px 16px',
+                    display: 'block',
+                }}
+            >
+                Trending Areas
+            </Typography>
+
+            {/* The actual list of options */}
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {children}
+            </ul>
+        </Box>
+    );
+});
+
+// --- 💡 SOLUTION: TrendingListbox Definition for Category Field ---
+const TrendingListbox = React.forwardRef(function ListboxComponent(props, ref) {
+    const { children, ...other } = props;
+    return (
+        <Box ref={ref} {...other} sx={{
+             padding: '16px 0',
+             border: '1px solid #ccc',
+             borderRadius: '8px',
+        }}>
+            {/* The Heading */}
+            <Typography
+                variant="subtitle2"
+                sx={{
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    marginLeft: '16px',
+                    marginBottom: '8px',
+                    color: '#333',
+                    letterSpacing: '0.5px',
+                }}
+            >
+                Trending Searches
+            </Typography>
+            {/* The actual list of options */}
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {children}
+            </ul>
+        </Box>
+    );
+});
+
+// --- Main Component ---
 const HeroSection = ({ selectedLocation, setSelectedLocation, searchTerm, setSearchTerm }) => {
     const dispatch = useDispatch();
     const { location = [] } = useSelector((state) => state.locationReducer || {});
@@ -66,7 +150,6 @@ const HeroSection = ({ selectedLocation, setSelectedLocation, searchTerm, setSea
     }));
 
 
-
     const selectedLocationObject = locationOptions.find(
         (option) => option.label === selectedLocation
     );
@@ -75,17 +158,17 @@ const HeroSection = ({ selectedLocation, setSelectedLocation, searchTerm, setSea
         <Box
             sx={{
                 backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${backgroundImage})`,
-                backgroundSize: "cover", // keeps aspect ratio, fills box
+                backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
                 width: "100%",
-                minHeight: { xs: "80vh", sm: "85vh", md: "87vh" }, // <-- decreased height
+                minHeight: { xs: "80vh", sm: "85vh", md: "87vh" },
                 display: "flex",
                 alignItems: "flex-start",
                 justifyContent: "center",
                 textAlign: "center",
-                pt: { xs: 6, sm: 8, md: 10 }, // <-- reduced padding to prevent overflow
-                overflow: "hidden", // <-- optional: hide any accidental scroll
+                pt: { xs: 6, sm: 8, md: 10 },
+                overflow: "hidden",
             }}
         >
 
@@ -178,12 +261,39 @@ const HeroSection = ({ selectedLocation, setSelectedLocation, searchTerm, setSea
                             getOptionLabel={(option) => option.label || ""}
                             onChange={(event, newValue) => setCategory(newValue ? newValue.label : "")}
                             sx={{ flex: 1, minWidth: { xs: '100%', sm: 350 } }}
+                            // 💡 Use the custom Listbox for the Category header/title
+                            ListboxComponent={TrendingListbox} 
                             renderInput={(params) => (
                                 <CustomTextField
                                     {...params}
                                     placeholder="Select Category"
                                     InputProps={{ ...params.InputProps }}
                                 />
+                            )}
+                            renderOption={(props, option) => (
+                                <Box {...props} component="li" sx={{ padding: '8px 16px !important' }}>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            backgroundColor: '#ff6600',
+                                            padding: '6px',
+                                            borderRadius: '4px',
+                                            marginRight: '12px',
+                                        }}
+                                    >
+                                        {/* Using the imported Material UI Icon */}
+                                        <TrendingUpIcon sx={{ color: 'white', fontSize: '18px' }} /> 
+                                    </Box>
+                                    <Box>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                            {option.label}
+                                        </Typography>
+                                        <Typography variant="caption" sx={{ color: 'gray' }}>
+                                            Category
+                                        </Typography>
+                                    </Box>
+                                </Box>
                             )}
                         />
 
@@ -196,6 +306,18 @@ const HeroSection = ({ selectedLocation, setSelectedLocation, searchTerm, setSea
                             value={selectedLocationObject || null}
                             onChange={(event, newValue) => setSelectedLocation(newValue ? newValue.label : "")}
                             sx={{ flex: 1, minWidth: { xs: '100%', sm: 250 } }}
+
+                            // 💡 Use the custom Listbox for the Location header/title
+                            ListboxComponent={LocationListbox}
+
+                            renderOption={(props, option) => (
+                                <ListItemButton {...props} sx={{ padding: '8px 16px' }}>
+                                    <Typography variant="body1">
+                                        {option.label}
+                                    </Typography>
+                                </ListItemButton>
+                            )}
+
                             renderInput={(params) => (
                                 <CustomTextField
                                     {...params}
