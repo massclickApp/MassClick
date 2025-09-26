@@ -18,6 +18,7 @@ import Location from './Internals/location/Location.js';
 import MainGrid from './components/MainGrid.js';
 import PrivateRoute from './PrivateRoute';
 import BusinessListing from './Internals/clientComponent/home.js';
+import { featuredServices } from './Internals/clientComponent/featureService.js'; 
 import { SnackbarProvider } from 'notistack';
 
 function App() {
@@ -84,8 +85,9 @@ function App() {
               }
             />
             <Route path="home" element={<BusinessListing />} />
-
-            <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
+            {featuredServices.map((service, index) => (
+              <Route key={index} path={service.path} element={<service.component />} />
+            ))}            <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
               <Route path="/dashboard" element={<Dashboard />}>
                 <Route index element={<MainGrid />} />
                 <Route path="user" element={<User />} />

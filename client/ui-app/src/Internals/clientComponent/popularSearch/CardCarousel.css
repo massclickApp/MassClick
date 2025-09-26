@@ -2,7 +2,7 @@
 .carousel-container {
     position: relative;
     margin: 60px auto; /* Increased margin for breathing room */
-    padding: 20px 0;
+    padding: 18px 0;
     max-width: 1530px;
      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 0 2px rgba(0, 0, 0, 0.05); 
     border-radius: 16px; /* Larger radius for a modern soft edge */

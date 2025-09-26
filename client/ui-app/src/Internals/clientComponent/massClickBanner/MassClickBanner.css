@@ -1,3 +1,4 @@
+/* --- Global Container Styles (Desktop/Default) --- */
 .massclick-banner-container {
     position: relative; /* Context for absolute shapes */
     display: flex;
@@ -8,7 +9,7 @@
     height: 250px; 
     padding: 20px;
     margin: 40px auto;
-    border: 1px solid #e0e0e0; /* Light border around the whole card */
+    border: 1px solid rgba(0, 0, 0, 0.15); /* Light black border around the whole card */
     border-radius: 15px;
     overflow: hidden; /* CRUCIAL: Hides the parts of the shapes that extend outside */
     background-color: white;

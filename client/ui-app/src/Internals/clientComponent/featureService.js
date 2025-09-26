@@ -30,6 +30,7 @@ import DrivingIcon from '../../assets/features/driving.png';
 import PackersIcon from '../../assets/features/packers.png';
 import DeliveryIcon from '../../assets/features/delivery.png';
 import PopularIcon from '../../assets/features/popular.png';
+import RestuarantCards from './cards/retuarants/restuarant';
 
 const StyledServiceCard = styled(Card)(({ theme }) => ({
   width: 120,
@@ -52,8 +53,8 @@ const StyledServiceCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const featuredServices = [
-  { name: "Restaurants", icon: RestuarantIcon, path: "/restaurants" },
+export const featuredServices = [
+  { name: "Restaurants", icon: RestuarantIcon, path: "/restaurants", component: RestuarantCards },
   { name: "Hotels", icon: HotelIcon, path: "/hotels" },
   { name: "Beauty Spa", icon: MassageIcon, path: "/beauty-spa" },
   { name: "Home Decor", icon: HomeDecIcon, path: "/home-decor" },
