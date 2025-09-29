@@ -1,13 +1,14 @@
+
 import React, { useState } from "react";
 import {
     Box,
     Button,
     Select,
-    MenuItem,
     FormControl,
     IconButton,
     Menu,
     Typography,
+    MenuItem
 } from "@mui/material";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -15,8 +16,9 @@ import CampaignIcon from "@mui/icons-material/Campaign";
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MI from "../../assets/Mi.png";
 import AddIcon from '@mui/icons-material/Add';
+import MI from "../../assets/Mi.png"; 
+import AddBusinessModal from "./AddBusinessModel.js"; // **Adjust path as necessary**
 
 const categories = [
     { name: "Leads", icon: <MailIcon /> },
@@ -35,9 +37,13 @@ const languages = [
 const CategoryBar = () => {
     const [selectedLanguage, setSelectedLanguage] = useState("English");
     const [anchorEl, setAnchorEl] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
     const handleMenuClose = () => setAnchorEl(null);
+
+    const handleOpenModal = () => setIsModalOpen(true);
+    const handleCloseModal = () => setIsModalOpen(false);
 
     return (
         <Box
@@ -48,7 +54,7 @@ const CategoryBar = () => {
                 position: "sticky",
                 top: 0,
                 zIndex: 1100,
-                boxShadow: "0 8px 25px rgba(0, 0, 0, 0.1)", // Top-notch shadow
+                boxShadow: "0 8px 25px rgba(0, 0, 0, 0.1)",
                 borderBottom: "none",
                 transition: "box-shadow 0.3s ease-in-out",
             }}
@@ -62,7 +68,6 @@ const CategoryBar = () => {
                     gap: { xs: 2, sm: 3 },
                 }}
             >
-                {/* Logo + Brand */}
                 <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1.5, sm: 2 } }}>
                     <Box
                         sx={{
@@ -119,7 +124,7 @@ const CategoryBar = () => {
                     </Box>
                 </Box>
 
-                {/* Desktop Navigation */}
+                {/* Desktop Navigation (Existing code) */}
                 <Box
                     sx={{
                         display: { xs: "none", sm: "flex" },
@@ -203,9 +208,11 @@ const CategoryBar = () => {
                         gap: { sm: 1.5, md: 2 },
                     }}
                 >
+                    {/* Desktop "Add Your Business" Button - ADDED onClick handler */}
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
+                        onClick={handleOpenModal} 
                         sx={{
                             background: "linear-gradient(45deg, #FF6F00, #F7941D)",
                             color: "white",
@@ -227,7 +234,7 @@ const CategoryBar = () => {
                         Add Your Business
                     </Button>
 
-                    {/* Icons */}
+                    {/* Icons (Existing code) */}
                     <IconButton
                         sx={{
                             color: "gray",
@@ -264,7 +271,7 @@ const CategoryBar = () => {
                     </IconButton>
                 </Box>
 
-                {/* Mobile Navigation */}
+                {/* Mobile Navigation (Existing code) */}
                 <Box
                     sx={{
                         display: { xs: "flex", sm: "none" },
@@ -272,8 +279,10 @@ const CategoryBar = () => {
                         gap: 2,
                     }}
                 >
+                    {/* Mobile "Add Your Business" Button - ADDED onClick handler */}
                     <Button
                         variant="contained"
+                        onClick={handleOpenModal} // ADDED onClick handler
                         sx={{
                             background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
                             color: "white",
@@ -301,6 +310,7 @@ const CategoryBar = () => {
                 </Box>
             </Box>
 
+            {/* Mobile Menu (Existing code) */}
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
                 <MenuItem disabled>
                     <FormControl size="small" sx={{ minWidth: 120 }}>
@@ -337,6 +347,12 @@ const CategoryBar = () => {
                     </Box>
                 </MenuItem>
             </Menu>
+
+            {/* 4. RENDER THE NEW MODAL COMPONENT */}
+            <AddBusinessModal
+                open={isModalOpen}
+                handleClose={handleCloseModal}
+            />
         </Box>
     );
 };

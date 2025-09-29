@@ -8,18 +8,21 @@ import {
     Autocomplete,
     Container,
     TextField,
-    ListItemButton, // 💡 ADDED: For the list items and the Detect Location button
+    ListItemButton,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MicIcon from "@mui/icons-material/Mic";
-import LocationSearchingIcon from "@mui/icons-material/LocationSearching"; // 💡 ADDED: For the Detect Location header icon
-import TrendingUpIcon from "@mui/icons-material/TrendingUp"; // 💡 ADDED: For the Category trend icon
+import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { styled } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllLocation } from "../../redux/actions/locationAction";
 import { getAllBusinessList } from "../../redux/actions/businessListAction";
+import { getAllCategory } from "../../redux/actions/categoryAction";
 import backgroundImage from "../../assets/background.png";
+import { useNavigate } from 'react-router-dom';
+import qs from 'qs'; // optional, for query string formatting
 
 // Refined custom-styled TextField component
 const CustomTextField = styled(TextField)(({ theme }) => ({
@@ -47,7 +50,6 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
     },
 }));
 
-// --- 💡 SOLUTION: LocationListbox Definition ---
 const LocationListbox = React.forwardRef(function ListboxComponent(props, ref) {
     const { children, ...other } = props;
     const orangeIconStyle = { color: '#ea6d11', fontSize: 20 };
@@ -101,9 +103,9 @@ const TrendingListbox = React.forwardRef(function ListboxComponent(props, ref) {
     const { children, ...other } = props;
     return (
         <Box ref={ref} {...other} sx={{
-             padding: '16px 0',
-             border: '1px solid #ccc',
-             borderRadius: '8px',
+            padding: '16px 0',
+            border: '1px solid #ccc',
+            borderRadius: '8px',
         }}>
             {/* The Heading */}
             <Typography
@@ -128,15 +130,27 @@ const TrendingListbox = React.forwardRef(function ListboxComponent(props, ref) {
 });
 
 // --- Main Component ---
-const HeroSection = ({ selectedLocation, setSelectedLocation, searchTerm, setSearchTerm }) => {
+const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
     const dispatch = useDispatch();
-    const { location = [] } = useSelector((state) => state.locationReducer || {});
-    const { businessList = [] } = useSelector((state) => state.businessListReducer || {});
-    const [category, setCategory] = useState('');
+    const navigate = useNavigate();
+
+    const locationState = useSelector((state) => state.locationReducer || { location: [] });
+    const businessListState = useSelector((state) => state.businessListReducer || { businessList: [] });
+    const categoryState = useSelector((state) => state.categoryReducer || { category: [] });
+
+
+    const { location = [] } = locationState;
+    const { businessList = [] } = businessListState;
+    const { category = [] } = categoryState;
+
+    const [categoryName, setCategoryName] = useState(""); // store name instead of ID
+    const [locationName, setLocationName] = useState("")
 
     useEffect(() => {
+        // Dispatch actions to fetch data (will only work if wrapped in Redux Provider)
         dispatch(getAllLocation());
         dispatch(getAllBusinessList());
+        dispatch(getAllCategory());
     }, [dispatch]);
 
     const locationOptions = location.map((loc) => ({
@@ -144,15 +158,41 @@ const HeroSection = ({ selectedLocation, setSelectedLocation, searchTerm, setSea
         id: loc._id,
     }));
 
-    const businessOptions = businessList.map((bus) => ({
-        label: typeof bus.businessName === "object" ? bus.businessName.en : bus.businessName,
-        id: bus._id,
+    const categoryOptions = category.map((cat) => ({
+        label: typeof cat.category === "object" ? cat.category.en : cat.category,
+        id: cat._id,
     }));
 
 
-    const selectedLocationObject = locationOptions.find(
-        (option) => option.label === selectedLocation
-    );
+    const handleSearch = () => {
+        const filteredBusinesses = businessList.filter((business) => {
+            const matchesSearchTerm =
+                !searchTerm ||
+                (business.businessName &&
+                    business.businessName.toLowerCase().includes(searchTerm.toLowerCase()));
+
+            const matchesCategory =
+                !categoryName ||
+                (business.category &&
+                    business.category.toLowerCase() === categoryName.toLowerCase());
+
+            const matchesLocation =
+                !locationName ||
+                (business.location &&
+                    business.location.toLowerCase() === locationName.toLowerCase());
+
+            return matchesSearchTerm && matchesCategory && matchesLocation;
+        });
+
+        const loc = (locationName || 'All').replace(/\s+/g, '');
+        const cat = (categoryName || 'All').replace(/\s+/g, '');
+        const term = (searchTerm || 'All').replace(/\s+/g, '');
+
+        navigate(`/${loc}/${cat}/${term}`, { state: { results: filteredBusinesses } });
+    };
+
+
+
 
     return (
         <Box
@@ -235,6 +275,88 @@ const HeroSection = ({ selectedLocation, setSelectedLocation, searchTerm, setSea
 
                         }}
                     >
+                        <Autocomplete
+                            freeSolo
+                            disableClearable
+                            options={locationOptions}
+                            getOptionLabel={(option) => option.label || ""}
+                            value={locationOptions.find(opt => opt.label === locationName) || null} // ✅ bind value
+
+                            onChange={(event, newValue) => setLocationName(newValue ? newValue.label : "")}
+                            sx={{ flex: 1, minWidth: { xs: '100%', sm: 250 } }}
+
+                            // 💡 Use the custom Listbox for the Location header/title
+                            ListboxComponent={LocationListbox}
+
+                            renderOption={(props, option) => {
+                                const { key, ...restProps } = props;
+                                return (
+                                    <ListItemButton key={option.id} {...restProps} sx={{ padding: "8px 16px" }}>
+                                        <Typography variant="body1">{option.label}</Typography>
+                                    </ListItemButton>
+                                );
+                            }}
+
+                            renderInput={(params) => (
+                                <CustomTextField
+                                    {...params}
+                                    placeholder="Location"
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <LocationOnIcon sx={{ color: "#ea6d11", fontSize: 24 }} />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            )}
+                        />
+                        <Autocomplete
+                            freeSolo
+                            disableClearable
+                            options={categoryOptions}
+                            getOptionLabel={(option) => option.label || ""}
+                            value={categoryOptions.find(opt => opt.label === categoryName) || null} // ✅ bind value
+
+                            onChange={(event, newValue) => setCategoryName(newValue ? newValue.label : "")}
+                            sx={{ flex: 1, minWidth: { xs: "100%", sm: 350 } }}
+                            ListboxComponent={TrendingListbox}
+                            renderInput={(params) => (
+                                <CustomTextField
+                                    {...params}
+                                    placeholder="Select Category"
+                                    InputProps={{ ...params.InputProps }}
+                                />
+                            )}
+                            renderOption={(props, option) => {
+                                const { key, ...restProps } = props;
+                                return (
+                                    <Box key={option.id} component="li" {...restProps} sx={{ padding: "8px 16px !important" }}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                backgroundColor: "#ff6600",
+                                                padding: "6px",
+                                                borderRadius: "4px",
+                                                marginRight: "12px",
+                                            }}
+                                        >
+                                            <TrendingUpIcon sx={{ color: "white", fontSize: "18px" }} />
+                                        </Box>
+                                        <Box>
+                                            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                                                {option.label}
+                                            </Typography>
+                                            <Typography variant="caption" sx={{ color: "gray" }}>
+                                                Category
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                );
+                            }}
+                        />
                         {/* FIRST FIELD: Search Term */}
                         <CustomTextField
                             sx={{ flex: 1, minWidth: { xs: '100%', sm: 400 } }}
@@ -254,89 +376,15 @@ const HeroSection = ({ selectedLocation, setSelectedLocation, searchTerm, setSea
                         />
 
                         {/* SECOND FIELD: Category */}
-                        <Autocomplete
-                            freeSolo
-                            disableClearable
-                            options={businessOptions}
-                            getOptionLabel={(option) => option.label || ""}
-                            onChange={(event, newValue) => setCategory(newValue ? newValue.label : "")}
-                            sx={{ flex: 1, minWidth: { xs: '100%', sm: 350 } }}
-                            // 💡 Use the custom Listbox for the Category header/title
-                            ListboxComponent={TrendingListbox} 
-                            renderInput={(params) => (
-                                <CustomTextField
-                                    {...params}
-                                    placeholder="Select Category"
-                                    InputProps={{ ...params.InputProps }}
-                                />
-                            )}
-                            renderOption={(props, option) => (
-                                <Box {...props} component="li" sx={{ padding: '8px 16px !important' }}>
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            backgroundColor: '#ff6600',
-                                            padding: '6px',
-                                            borderRadius: '4px',
-                                            marginRight: '12px',
-                                        }}
-                                    >
-                                        {/* Using the imported Material UI Icon */}
-                                        <TrendingUpIcon sx={{ color: 'white', fontSize: '18px' }} /> 
-                                    </Box>
-                                    <Box>
-                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                            {option.label}
-                                        </Typography>
-                                        <Typography variant="caption" sx={{ color: 'gray' }}>
-                                            Category
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            )}
-                        />
+
 
                         {/* THIRD FIELD: Location */}
-                        <Autocomplete
-                            freeSolo
-                            disableClearable
-                            options={locationOptions}
-                            getOptionLabel={(option) => option.label || ""}
-                            value={selectedLocationObject || null}
-                            onChange={(event, newValue) => setSelectedLocation(newValue ? newValue.label : "")}
-                            sx={{ flex: 1, minWidth: { xs: '100%', sm: 250 } }}
 
-                            // 💡 Use the custom Listbox for the Location header/title
-                            ListboxComponent={LocationListbox}
-
-                            renderOption={(props, option) => (
-                                <ListItemButton {...props} sx={{ padding: '8px 16px' }}>
-                                    <Typography variant="body1">
-                                        {option.label}
-                                    </Typography>
-                                </ListItemButton>
-                            )}
-
-                            renderInput={(params) => (
-                                <CustomTextField
-                                    {...params}
-                                    placeholder="Location"
-                                    InputProps={{
-                                        ...params.InputProps,
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <LocationOnIcon sx={{ color: "#ea6d11", fontSize: 24 }} />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            )}
-                        />
 
                         {/* Search Button */}
                         <Button
                             variant="contained"
+                            onClick={handleSearch}
                             sx={{
                                 flexShrink: 0,
                                 width: { xs: "100%", sm: "15%" },

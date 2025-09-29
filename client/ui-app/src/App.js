@@ -18,8 +18,9 @@ import Location from './Internals/location/Location.js';
 import MainGrid from './components/MainGrid.js';
 import PrivateRoute from './PrivateRoute';
 import BusinessListing from './Internals/clientComponent/home.js';
-import { featuredServices } from './Internals/clientComponent/featureService.js'; 
+import { featuredServices } from './Internals/clientComponent/featureService.js';
 import { SnackbarProvider } from 'notistack';
+import SearchResults from './Internals/clientComponent/SearchResult/SearchResult.js';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -85,6 +86,10 @@ function App() {
               }
             />
             <Route path="home" element={<BusinessListing />} />
+            <Route
+              path="/:location/:category/:searchTerm"
+              element={<SearchResults />}
+            />
             {featuredServices.map((service, index) => (
               <Route key={index} path={service.path} element={<service.component />} />
             ))}            <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
