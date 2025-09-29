@@ -1,15 +1,12 @@
-/* MassClickBanner.css */
 /* Reset or Base Styles */
 .restaurant-page-container {
-    font-family: Arial, sans-serif;
-    /* Use your project's desired font */
+    font-family: 'Poppins', sans-serif; /* A modern, clean font */
     box-sizing: border-box;
 }
 
 a {
     text-decoration: none;
-    color: #007bff;
-    /* Blue for links */
+    color: #e44d26; /* Link color matching the 'More' link accent */
 }
 
 ul {
@@ -18,132 +15,124 @@ ul {
     margin: 0;
 }
 
+
 .hero-banner {
-    /* Set your main background image here */
-    /* background: url('your-main-hero-image.jpg') center center no-repeat; */
+    background-position: center;
     background-size: cover;
-    height: 450px;
-    /* Adjust height as needed */
+    background-repeat: no-repeat;
+    height: 450px; /* Consistent height for visual impact */
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    /* Align title/cards to bottom */
     align-items: center;
     position: relative;
-    padding-bottom: 50px;
-    /* Space for the action cards */
+    padding-bottom: 50px; 
+}
+
+/* Overlay for text legibility on the background image */
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* Dark overlay */
+    z-index: 1; /* Below the title and actions */
 }
 
 .hero-title {
     color: white;
-    font-size: 3em;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    margin-bottom: 20px;
+    font-size: 3.5em; /* Larger, bolder title */
+    font-weight: 800;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+    margin-bottom: 40px;
+    z-index: 2; /* Above the overlay */
 }
 
+/* ------------------ 
+   2. ACTION CARDS (Book, Trending, Order)
+   ------------------ */
 .hero-actions {
     display: flex;
-    gap: 20px;
-    /* Position the cards over the image boundary */
+    gap: 30px; /* Increased gap */
     position: absolute;
-    bottom: -50px;
-    /* Move up to overlap the image and section below */
+    bottom: -50px; /* Overlap the image and section below */
+    z-index: 3;
 }
 
 .action-card {
     background: white;
-    border-radius: 8px;
-    padding: 15px 30px;
+    border-radius: 10px;
+    padding: 20px 35px; /* Generous padding */
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Stronger shadow */
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    /* Ensure a minimum width */
+    min-width: 150px; 
 }
 
 .action-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
 }
 
 .action-card .icon {
-    font-size: 2em;
+    font-size: 2.5em;
     display: block;
     margin-bottom: 5px;
 }
 
 .action-card .title {
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 1.1em;
     margin: 0;
+    color: #333;
 }
 
 .action-card .subtitle {
     font-size: 0.9em;
-    color: gray;
+    color: #6c757d;
     margin: 0;
 }
 
+/* ------------------ 
+   3. CATEGORY CARDS
+   ------------------ */
 .category-cards-section {
-    padding: 80px 5% 40px;
-    /* Add top padding to account for overlapping action cards */
-    max-width: 1400px;
-    /* Optional: Constrain width on very large screens */
+    padding: 100px 5% 40px; /* Adjusted top padding for overlap */
+    max-width: 1440px; /* Standardized max width */
     margin: 0 auto;
 }
 
 .cards-grid {
-    /* CSS Grid for the 6-column layout on desktop */
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    /* 6 equal columns */
-    gap: 20px;
+    grid-template-columns: repeat(6, 1fr); /* 6 equal columns on desktop */
+    gap: 25px; /* Consistent gap */
     margin-bottom: 40px;
 }
 
-/* Responsiveness for the Grid (Crucial for an international project!) */
-@media (max-width: 1200px) {
-    .cards-grid {
-        /* 3 columns on medium screens */
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .cards-grid {
-        /* 2 columns on tablet screens */
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .cards-grid {
-        /* 1 column on mobile screens */
-        grid-template-columns: 1fr;
-    }
-}
-
 .category-card {
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid #eee;
+    border-radius: 8px; /* Slightly more rounded corners */
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    transition: box-shadow 0.3s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s, transform 0.3s;
 }
 
 .category-card:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
 }
 
 .card-image-wrapper {
-    /* Define image dimensions */
     height: 150px;
-    /* Placeholder for the background image for each card */
     background-position: center;
     background-size: cover;
+    background-repeat: no-repeat;
+    /* Generic image placeholder if specific image isn't loaded */
+    background-color: #f8f8f8; 
 }
-
-
-
-
 
 
 .card-content {
@@ -151,43 +140,134 @@ ul {
 }
 
 .card-title {
-    font-size: 1.1em;
-    font-weight: bold;
+    font-size: 1.2em;
+    font-weight: 700;
     margin-top: 0;
     margin-bottom: 10px;
-    color: #333;
+    color: #212529;
 }
 
 .category-list li {
-    font-size: 0.9em;
-    color: #555;
-    line-height: 1.5;
+    font-size: 0.95em;
+    color: #495057;
+    line-height: 1.6;
 }
 
 .more-link {
     display: block;
-    margin-top: 10px;
+    margin-top: 15px;
     font-weight: bold;
-    color: #e44d26;
-    /* Use a strong accent color */
+    color: #e44d26; /* Strong accent color */
+    transition: color 0.2s;
 }
 
+.more-link:hover {
+    color: #b33c1f;
+}
+
+/* ------------------ 
+   4. VIEW ALL BUTTON
+   ------------------ */
 .view-all-wrapper {
     text-align: center;
+    padding-top: 20px;
 }
 
 .view-all-btn {
-    padding: 12px 30px;
-    background-color: #007bff;
-    /* Blue button from the image */
+    padding: 14px 40px;
+    background-color: #007bff; /* Primary blue button */
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 1.1em;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
 
 .view-all-btn:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* ------------------ 
+   5. RESPONSIVENESS
+   ------------------ */
+
+/* Tablet and Medium Desktop (1200px and down) */
+@media (max-width: 1200px) {
+    .cards-grid {
+        /* 3 columns on medium screens */
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    .hero-title {
+        font-size: 3em;
+    }
+}
+
+/* Tablet Screens (768px and down) */
+@media (max-width: 768px) {
+    .hero-banner {
+        height: 350px; /* Reduced height */
+        padding-bottom: 80px;
+    }
+    
+    .hero-title {
+        font-size: 2.5em;
+        margin-bottom: 30px;
+    }
+
+    .hero-actions {
+        flex-direction: column; /* Stack action cards vertically */
+        gap: 15px;
+        bottom: -100px; /* Adjust for vertical stacking */
+        width: 90%;
+        max-width: 300px;
+    }
+
+    .action-card {
+        padding: 15px 20px;
+        min-width: unset;
+        width: 100%;
+    }
+
+    .category-cards-section {
+        padding-top: 150px; /* Increased top padding to clear stacked action cards */
+    }
+
+    .cards-grid {
+        /* 2 columns on tablet screens */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}
+
+/* Mobile Screens (480px and down) */
+@media (max-width: 480px) {
+    .hero-banner {
+        height: 300px;
+    }
+
+    .hero-title {
+        font-size: 2em;
+    }
+    
+    .category-cards-section {
+        padding: 150px 5% 20px;
+    }
+
+    .cards-grid {
+        /* 1 column on mobile screens */
+        grid-template-columns: 1fr;
+    }
+
+    .action-card .icon {
+        font-size: 2em;
+    }
+
+    .action-card .title {
+        font-size: 1em;
+    }
 }
