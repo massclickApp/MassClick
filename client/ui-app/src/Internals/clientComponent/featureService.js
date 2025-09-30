@@ -33,6 +33,9 @@ import PopularIcon from '../../assets/features/popular.png';
 // import RestuarantCards from './cards/retuarants/restuarant';
 import RestaurantCards from './cards/resturant/restaurant';
 import HotelCards from './cards/hotels/hotel.js';
+import BeautySpaCards from './cards/beautySpa/beautySpa.js';
+import HomeDecorCards from './cards/homeDecor/homeDecor.js';
+import WeddingPlanCards from './cards/weddingPlan/weddingPlan.js';
 
 const StyledServiceCard = styled(Card)(({ theme }) => ({
   width: 120,
@@ -58,9 +61,9 @@ const StyledServiceCard = styled(Card)(({ theme }) => ({
 export const featuredServices = [
   { name: "Restaurants", icon: RestuarantIcon, path: "/restaurants", component: RestaurantCards },
   { name: "Hotels", icon: HotelIcon, path: "/hotels", component: HotelCards },
-  { name: "Beauty Spa", icon: MassageIcon, path: "/beauty-spa" },
-  { name: "Home Decor", icon: HomeDecIcon, path: "/home-decor" },
-  { name: "Wedding Planning", icon: WeddingIcon, path: "/wedding-planning" },
+  { name: "Beauty Spa", icon: MassageIcon, path: "/beauty-spa", component: BeautySpaCards },
+  { name: "Home Decor", icon: HomeDecIcon, path: "/home-decor",component: HomeDecorCards },
+  { name: "Wedding Planning", icon: WeddingIcon, path: "/wedding-planning",component: WeddingPlanCards },
   { name: "Education", icon: EducationIcon, path: "/education" },
   { name: "Rent & Hire", icon: RentIcon, path: "/rent-hire" },
   { name: "Hospitals", icon: HospitalIcon, path: "/hospitals" },
