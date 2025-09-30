@@ -18,7 +18,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AddIcon from '@mui/icons-material/Add';
 import MI from "../../assets/Mi.png"; 
-import AddBusinessModal from "./AddBusinessModel.js"; // **Adjust path as necessary**
+import AddBusinessModal from "./AddBusinessModel.js"; 
 
 const categories = [
     { name: "Leads", icon: <MailIcon /> },
