@@ -1,6 +1,7 @@
 /* --- restuarants.css --- */
 
 .restaurants-list-wrapper {
+    /* Center the list container and apply global padding */
     width: 100%;
     max-width: 1200px; /* Standard maximum width for main content on large screens */
     margin: 20px auto; /* Center the container horizontally, add vertical spacing */
@@ -13,7 +14,13 @@
     box-sizing: border-box; /* Include padding/border in element's total width */
 }
 
+/* ------------------ */
+/* --- RESPONSIVENESS --- */
+/* ------------------ */
 
+/* Tablet View (max-width: 992px) */
+/* You might introduce a slight change here, but a single column often works best 
+   when the card itself is wide and contains many details. */
 @media (max-width: 992px) {
     .restaurants-list-wrapper {
         max-width: 960px; /* Adjust max-width slightly for smaller tablets */

@@ -21,6 +21,13 @@ import BusinessListing from './Internals/clientComponent/home.js';
 import { featuredServices } from './Internals/clientComponent/featureService.js';
 import { SnackbarProvider } from 'notistack';
 import SearchResults from './Internals/clientComponent/SearchResult/SearchResult.js';
+import { categoriesServices } from './Internals/clientComponent/serviceCard.js';
+
+const ComingSoon = ({ title }) => (
+  <div style={{ textAlign: 'center', marginTop: '20%' }}>
+    <h2>{title} Page Coming Soon!</h2>
+  </div>
+);
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -90,9 +97,21 @@ function App() {
               path="/:location/:category/:searchTerm"
               element={<SearchResults />}
             />
-            {featuredServices.map((service, index) => (
-              <Route key={index} path={service.path} element={<service.component />} />
-            ))}            <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
+            {featuredServices.map((service) => {
+              const Component = service.component || (() => <ComingSoon title={service.name} />);
+              return <Route key={service.path} path={service.path} element={<Component />} />;
+            })}
+
+            {categoriesServices.flatMap((category) =>
+              category.items.map((item) => {
+                const path = item.path || item.route; 
+                const Component = item.component || (() => <ComingSoon title={item.name} />);
+                return <Route key={path} path={path} element={<Component />} />;
+              })
+            )}
+
+
+            <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
               <Route path="/dashboard" element={<Dashboard />}>
                 <Route index element={<MainGrid />} />
                 <Route path="user" element={<User />} />

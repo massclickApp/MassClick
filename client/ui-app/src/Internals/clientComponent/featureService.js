@@ -36,6 +36,21 @@ import HotelCards from './cards/hotels/hotel.js';
 import BeautySpaCards from './cards/beautySpa/beautySpa.js';
 import HomeDecorCards from './cards/homeDecor/homeDecor.js';
 import WeddingPlanCards from './cards/weddingPlan/weddingPlan.js';
+import EducationCards from './cards/education/education.js';
+import RentAndHiringCards from './cards/RentandHiring/rentAndHiring.js';
+import HospitalsCards from './cards/hospitals/hospitals.js';
+import ContractorsCards from './cards/contractors/contractors.js';
+import PetShopsCards from './cards/petShops/petShops.js';
+import PgAndHostelsCards from './cards/pgAndHostels/pgAndHostels.js';
+import EstateAgentCards from './cards/estateAgent/estateAgent.js';
+import DentistsCards from './cards/dentists/dentists.js';
+import GymCards from './cards/gym/gym.js';
+import LoansCards from './cards/loans/loans.js';
+import EventOrganisersCards from './cards/eventOrganisers/eventOrganisers.js';
+import DrivingSchoolsCards from './cards/driving Schools/drivingSchools.js';
+import PackersAndMoversCards from './cards/packersAndMovers/packersAndMovers.js';
+import CourierServiceCards from './cards/courierService/courierService.js';
+import PopularCategoriesCards from './cards/popularCategories/popularCategories.js';
 
 const StyledServiceCard = styled(Card)(({ theme }) => ({
   width: 120,
@@ -64,21 +79,21 @@ export const featuredServices = [
   { name: "Beauty Spa", icon: MassageIcon, path: "/beauty-spa", component: BeautySpaCards },
   { name: "Home Decor", icon: HomeDecIcon, path: "/home-decor",component: HomeDecorCards },
   { name: "Wedding Planning", icon: WeddingIcon, path: "/wedding-planning",component: WeddingPlanCards },
-  { name: "Education", icon: EducationIcon, path: "/education" },
-  { name: "Rent & Hire", icon: RentIcon, path: "/rent-hire" },
-  { name: "Hospitals", icon: HospitalIcon, path: "/hospitals" },
-  { name: "Contractors", icon: ContractIcon, path: "/contractors" },
-  { name: "Pet Shops", icon: PetShopIcon, path: "/pet-shops" },
-  { name: "PG/Hostels", icon: HostelsIcon, path: "/pg-hostels" },
-  { name: "Estate Agent", icon: AgentIcon, path: "/estate-agent" },
-  { name: "Dentists", icon: DentistIcon, path: "/dentists" },
-  { name: "Gym", icon: GymIcon, path: "/gym" },
-  { name: "Loans", icon: LoanIcon, path: "/loans" },
-  { name: "Event Organisers", icon: EventIcon, path: "/event-organisers" },
-  { name: "Driving Schools", icon: DrivingIcon, path: "/driving-schools" },
-  { name: "Packers & Movers", icon: PackersIcon, path: "/packers-movers" },
-  { name: "Courier Service", icon: DeliveryIcon, path: "/courier-service" },
-  { name: "Popular Categories", icon: PopularIcon, path: "/popular-categories" },
+  { name: "Education", icon: EducationIcon, path: "/education", component: EducationCards },
+  { name: "Rent & Hire", icon: RentIcon, path: "/rent-hire", component: RentAndHiringCards },
+  { name: "Hospitals", icon: HospitalIcon, path: "/hospitals", component: HospitalsCards },
+  { name: "Contractors", icon: ContractIcon, path: "/contractors",component: ContractorsCards  },
+  { name: "Pet Shops", icon: PetShopIcon, path: "/pet-shops",component: PetShopsCards },
+  { name: "PG/Hostels", icon: HostelsIcon, path: "/pg-hostels",component: PgAndHostelsCards },
+  { name: "Estate Agent", icon: AgentIcon, path: "/estate-agent",component: EstateAgentCards },
+  { name: "Dentists", icon: DentistIcon, path: "/dentists",component: DentistsCards },
+  { name: "Gym", icon: GymIcon, path: "/gym",component: GymCards  },
+  { name: "Loans", icon: LoanIcon, path: "/loans" ,component: LoansCards},
+  { name: "Event Organisers", icon: EventIcon, path: "/event-organisers",component: EventOrganisersCards },
+  { name: "Driving Schools", icon: DrivingIcon, path: "/driving-schools" ,component: DrivingSchoolsCards},
+  { name: "Packers & Movers", icon: PackersIcon, path: "/packers-movers",component: PackersAndMoversCards },
+  { name: "Courier Service", icon: DeliveryIcon, path: "/courier-service",component: CourierServiceCards},
+  { name: "Popular Categories", icon: PopularIcon, path: "/popular-categories",component: PopularCategoriesCards },
 ];
 
 

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "./weddingPlan.css";
+import "./rentAndHiring.css";
 import CardDesign from "../cards.js";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
@@ -13,7 +13,7 @@ const buildImageSrc = (base64String, defaultType = "webp") => {
     const clean = base64String.replace(/[\r\n\s]/g, "");
 
     if (clean.startsWith("data:")) return clean;
-
+    
     let mimeType = defaultType;
     if (clean.startsWith("/9j")) mimeType = "jpeg";
     else if (clean.startsWith("iVBOR")) mimeType = "png";
@@ -21,7 +21,7 @@ const buildImageSrc = (base64String, defaultType = "webp") => {
     return `data:image/${mimeType};base64,${clean}`;
 };
 
-const WeddingPlanCards = () => {
+const RentAndHiringCards = () => {
     const dispatch = useDispatch();
     const { businessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
@@ -31,12 +31,12 @@ const WeddingPlanCards = () => {
         dispatch(getAllBusinessList());
     }, [dispatch]);
 
-  const weddingPlan = businessList.filter((b) =>
-    b.businessName?.toLowerCase().includes("wedding plan".toLowerCase())
+  const rentAndHiring = businessList.filter((b) =>
+    b.businessName?.toLowerCase().includes("Rent and Hiring".toLowerCase())
 );
 
-    if (weddingPlan.length === 0) {
-        return <p>No matching businesses found with the name "Wedding Plans".</p>;
+    if (rentAndHiring.length === 0) {
+        return <p>No matching businesses found with the name "Rent And Hiring".</p>;
     }
 
     return (
@@ -44,7 +44,7 @@ const WeddingPlanCards = () => {
             <CardsSearch />
 
             <div className="restaurants-list-wrapper">
-                {weddingPlan.map((business) => {
+                {rentAndHiring.map((business) => {
                     const imageSource = buildImageSrc(business.bannerImage);
 
                     return (
@@ -66,4 +66,4 @@ const WeddingPlanCards = () => {
     );
 };
 
-export default WeddingPlanCards;
+export default RentAndHiringCards;

@@ -1,19 +1,21 @@
 import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';   // ✅ use Link instead of <a>
 import CarMechanic from "../../../assets/services/carService.png";
-import Parlours from "../../../assets/services/parlours.png"
-import Msand from "../../../assets/services/Msand.png"
-import Hotels from "../../../assets/services/Hotels.png"
+import Parlours from "../../../assets/services/parlours.png";
+import Msand from "../../../assets/services/Msand.png";
+import Hotels from "../../../assets/services/Hotels.png";
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'; 
 
 import './trendingSearch.css';
+import trendingCards from './trendingCard';
 
-const trendingServices = [
-  { id: 1, name: "Hostels", image: CarMechanic, alt: "Electrician" },
-  { id: 2, name: "Parlours", image: Parlours, alt: "Parlour" },
-  { id: 3, name: "M sand", image: Msand, alt: "Spa" },
-  { id: 4, name: "Hotel", image: Hotels, alt: "Saloon" },
+export const trendingServices = [
+  { id: 1, name: "Hostels", image: CarMechanic, alt: "Electrician", path: "/trending/hostels", component: trendingCards },
+  { id: 2, name: "Parlours", image: Parlours, alt: "Parlour", path: "/trending/parlours", component: trendingCards },
+  { id: 3, name: "M sand", image: Msand, alt: "Spa", path: "/trending/msand", component: trendingCards },
+  { id: 4, name: "Hotel", image: Hotels, alt: "Saloon", path: "/trending/hotel", component: trendingCards },
 ];
 
 const TrendingSearchesCarousel = () => {
@@ -40,12 +42,10 @@ const TrendingSearchesCarousel = () => {
 
   return (
     <div className="trendingSection">
-      {/* Updated Header with a Subtitle for better context */}
       <div className="headerContent">
         <h2 className="sectionTitle">Trending Searches Near You</h2>
         <p className="sectionSubtitle">Stay updated with the latest local and international trends.</p>
       </div>
-      {/* --- Carousel Navigation Buttons --- */}
       <div className="carouselControls">
         <div 
           className="scrollIndicator left"
@@ -62,13 +62,14 @@ const TrendingSearchesCarousel = () => {
           <KeyboardDoubleArrowRightIcon className="arrow" />
         </div>
       </div>
+
       {/* --- Carousel Cards Container --- */}
       <div className="carouselWrapper">
         <div className="carouselContainer" ref={carouselRef}>
           {trendingServices.map((service) => (
-            <a
+            <Link
               key={service.id}
-              href={service.link}
+              to={service.path}   // ✅ correct path for React Router
               className="cardLink"
             >
               <div className="cardImageWrapper">
@@ -84,7 +85,7 @@ const TrendingSearchesCarousel = () => {
                     Explore <ChevronRightIcon className="exploreArrow" />
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

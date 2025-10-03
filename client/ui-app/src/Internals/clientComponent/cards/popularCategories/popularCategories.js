@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "./weddingPlan.css";
+import "./popularCategories.css";
 import CardDesign from "../cards.js";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
@@ -21,7 +21,7 @@ const buildImageSrc = (base64String, defaultType = "webp") => {
     return `data:image/${mimeType};base64,${clean}`;
 };
 
-const WeddingPlanCards = () => {
+const PopularCategoriesCards = () => {
     const dispatch = useDispatch();
     const { businessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
@@ -31,12 +31,12 @@ const WeddingPlanCards = () => {
         dispatch(getAllBusinessList());
     }, [dispatch]);
 
-  const weddingPlan = businessList.filter((b) =>
-    b.businessName?.toLowerCase().includes("wedding plan".toLowerCase())
+  const popularCategories = businessList.filter((b) =>
+    b.businessName?.toLowerCase().includes("Popular Categories".toLowerCase())
 );
 
-    if (weddingPlan.length === 0) {
-        return <p>No matching businesses found with the name "Wedding Plans".</p>;
+    if (popularCategories.length === 0) {
+        return <p>No matching businesses found with the name "PopularCategories".</p>;
     }
 
     return (
@@ -44,7 +44,7 @@ const WeddingPlanCards = () => {
             <CardsSearch />
 
             <div className="restaurants-list-wrapper">
-                {weddingPlan.map((business) => {
+                {popularCategories.map((business) => {
                     const imageSource = buildImageSrc(business.bannerImage);
 
                     return (
@@ -66,4 +66,4 @@ const WeddingPlanCards = () => {
     );
 };
 
-export default WeddingPlanCards;
+export default PopularCategoriesCards;

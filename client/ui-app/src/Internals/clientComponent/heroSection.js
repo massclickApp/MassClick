@@ -312,7 +312,7 @@ const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
                                 />
                             )}
                         />
-                        <Autocomplete
+                        {/* <Autocomplete
                             freeSolo
                             disableClearable
                             options={categoryOptions}
@@ -356,7 +356,7 @@ const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
                                     </Box>
                                 );
                             }}
-                        />
+                        /> */}
                         {/* FIRST FIELD: Search Term */}
                         <CustomTextField
                             sx={{ flex: 1, minWidth: { xs: '100%', sm: 400 } }}
