@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import businessListModel from "../../model/businessList/businessListModel.js"
+import SearchLogModel from "../../model/businessList/searchLogModel.js"
 import mongoose from "mongoose";
 
 export const createBusinessList = async function (reqBody = {}) {
@@ -77,4 +78,46 @@ export const activeBusinessList = async (id, newStatus) => {
     if (!business) throw new Error("Business not found");
 
     return business;
+};
+export const getTrendingSearches = async (limit = 4, location) => {
+    try {
+        const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000); 
+
+        const pipeline = [
+            {
+                $match: {
+                    createdAt: { $gte: twoDaysAgo },
+                 
+                }
+            },
+            {
+                $group: {
+                    _id: "$categoryName", // Group by the category name
+                    count: { $sum: 1 }      // Count the occurrences
+                }
+            },
+            {
+                $sort: { count: -1 }
+            },
+            {
+                $limit: limit
+            },
+            {
+                $project: {
+                    _id: 0, // Exclude the MongoDB ID
+                    name: "$_id", // Rename _id (the categoryName) to 'name'
+                    path: { $concat: ["/trending/", { $toLower: "$_id" }] }, // Create the path
+                }
+            }
+        ];
+
+        const trendingResults = await SearchLogModel.aggregate(pipeline);
+        
+
+        return trendingResults;
+        
+    } catch (error) {
+        console.error("Error fetching trending searches:", error);
+        return []; 
+    }
 };

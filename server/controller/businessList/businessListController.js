@@ -1,4 +1,4 @@
-import { createBusinessList, viewBusinessList, viewAllBusinessList, updateBusinessList, deleteBusinessList,activeBusinessList } from "../../helper/businessList/businessListHelper.js";
+import { createBusinessList, viewBusinessList, viewAllBusinessList, updateBusinessList,getTrendingSearches, deleteBusinessList,activeBusinessList } from "../../helper/businessList/businessListHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 
 export const addBusinessListAction = async (req, res) => {
@@ -68,3 +68,16 @@ export const activeBusinessListAction = async (req, res) => {
     res.status(400).send({ message: error.message });
   }
 };
+export const getTrendingSearchesAction = async (req, res) => {
+    try {
+        const location = req.query.location; 
+
+        const trendingList = await getTrendingSearches(4, location); 
+
+        res.send(trendingList);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: "Failed to fetch trending data" });
+    }
+};
+

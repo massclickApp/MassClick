@@ -22,6 +22,7 @@ import { featuredServices } from './Internals/clientComponent/featureService.js'
 import { SnackbarProvider } from 'notistack';
 import SearchResults from './Internals/clientComponent/SearchResult/SearchResult.js';
 import { categoriesServices } from './Internals/clientComponent/serviceCard.js';
+import TrendingCards from './Internals/clientComponent/trendingSearch/trendingCard.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -96,6 +97,10 @@ function App() {
             <Route
               path="/:location/:category/:searchTerm"
               element={<SearchResults />}
+            />
+             <Route 
+                path="/trending/search/:categorySlug" 
+                element={<TrendingCards />} 
             />
             {featuredServices.map((service) => {
               const Component = service.component || (() => <ComingSoon title={service.name} />);

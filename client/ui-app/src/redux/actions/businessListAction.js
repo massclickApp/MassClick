@@ -4,7 +4,8 @@ import {
   CREATE_BUSINESS_REQUEST, CREATE_BUSINESS_SUCCESS, CREATE_BUSINESS_FAILURE,
   EDIT_BUSINESS_REQUEST, EDIT_BUSINESS_SUCCESS, EDIT_BUSINESS_FAILURE,
   DELETE_BUSINESS_REQUEST, DELETE_BUSINESS_SUCCESS, DELETE_BUSINESS_FAILURE,
-  ACTIVE_BUSINESS_REQUEST, ACTIVE_BUSINESS_SUCCESS, ACTIVE_BUSINESS_FAILURE
+  ACTIVE_BUSINESS_REQUEST, ACTIVE_BUSINESS_SUCCESS, ACTIVE_BUSINESS_FAILURE,
+  FETCH_TRENDING_REQUEST, FETCH_TRENDING_SUCCESS, FETCH_TRENDING_FAILURE, // ✅ New Imports
 } from "../actions/userActionTypes.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -109,4 +110,47 @@ export const deleteBusinessList = (id) => async (dispatch) => {
     dispatch({ type: DELETE_BUSINESS_FAILURE, payload: error.response?.data || error.message });
     throw error;
   }
+};
+
+export const getTrendingSearches = (location) => async (dispatch) => {
+    dispatch({ type: FETCH_TRENDING_REQUEST });
+    try {
+        const token = localStorage.getItem("accessToken");
+        
+        const url = location 
+          ? `${API_URL}/businesslist/trending-searches?location=${location}` 
+          : `${API_URL}/businesslist/trending-searches`;
+
+        const response = await axios.get(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        // Dispatch success with the fetched data
+        dispatch({ type: FETCH_TRENDING_SUCCESS, payload: response.data });
+    } catch (error) {
+        console.error("Error fetching trending searches:", error);
+        dispatch({
+          type: FETCH_TRENDING_FAILURE,
+          payload: error.response?.data || error.message,
+        });
+    }
+};
+
+
+export const logSearchActivity = (categoryName, location) => async () => {
+    try {
+        const token = localStorage.getItem("accessToken");
+        
+        await axios.post(
+          `${API_URL}/businesslist/log-search`, 
+          { categoryName, location }, 
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        
+        console.log(`Search logged for: ${categoryName} in ${location}`);
+        
+    } catch (error) {
+        console.warn("Failed to log search activity:", error.message);
+    }
 };

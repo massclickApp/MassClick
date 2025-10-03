@@ -18,7 +18,7 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { styled } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllLocation } from "../../redux/actions/locationAction";
-import { getAllBusinessList } from "../../redux/actions/businessListAction";
+import { getAllBusinessList, logSearchActivity } from "../../redux/actions/businessListAction";
 import { getAllCategory } from "../../redux/actions/categoryAction";
 import backgroundImage from "../../assets/background.png";
 import { useNavigate } from 'react-router-dom';
@@ -165,6 +165,12 @@ const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
 
 
     const handleSearch = () => {
+        const logCategory = categoryName || searchTerm || 'All Categories';
+        const logLocation = locationName || 'Global'; 
+
+        dispatch(logSearchActivity(logCategory, logLocation));
+
+
         const filteredBusinesses = businessList.filter((business) => {
             const matchesSearchTerm =
                 !searchTerm ||

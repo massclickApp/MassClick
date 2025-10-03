@@ -6,7 +6,8 @@ export const Collections = {
     LOCATION: 'location',
     CATEGORY: 'category',
     BUSINESSLIST: 'businesslist',
-    ROLES: 'roles'
+    ROLES: 'roles',
+    LOGSEARCH: 'logsearch'
 };
 
 export const {
@@ -17,5 +18,7 @@ export const {
     LOCATION,
     CATEGORY,
     BUSINESSLIST,
-    ROLES
+    ROLES,
+    LOGSEARCH
+
 }= Collections;
