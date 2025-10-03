@@ -174,30 +174,75 @@ export default function Login({ setIsAuthenticated }) {
         </Box>
 
         {/* Right Side - Info Section */}
-        <Box sx={{
-          flex: 1,
-          display: { xs: 'none', md: 'flex' },
-          justifyContent: 'center',
-          alignItems: 'center',
-          background: 'linear-gradient(135deg, #fceabb 0%, #f8b500 100%)',
-          flexDirection: 'column',
-          textAlign: 'center',
-          px: 6,
-          gap: 3
-        }}>
-          <Typography sx={{ color: '#fff', fontSize: '3rem', fontWeight: 'bold', textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
-            India's Best Local Business Search Engine
+        <Box
+          sx={{
+            flex: 1,
+            display: { xs: 'none', md: 'flex' },
+            justifyContent: 'center',
+            alignItems: 'center',
+            background: 'linear-gradient(135deg, #ea6d11 0%, #ff9800 100%)',
+            flexDirection: 'column',
+            textAlign: 'center',
+            px: 8,
+            py: 6,
+            gap: 4,
+          }}
+        >
+          <Typography
+            sx={{
+              color: '#fff',
+              fontSize: { xs: '2rem', md: '3.5rem' },
+              fontWeight: 800,
+              textShadow: '2px 2px 6px rgba(0,0,0,0.35)',
+              letterSpacing: '0.5px',
+              lineHeight: 1.2,
+              maxWidth: '800px',
+            }}
+          >
+            Discover & Connect with Local Businesses Instantly
           </Typography>
-          <Typography sx={{ color: '#fff', fontSize: '2rem', textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}>
-            Widely used local search engine
+
+          <Typography
+            sx={{
+              color: '#fffef0',
+              fontSize: { xs: '1.4rem', md: '2rem' },
+              fontWeight: 500,
+              textShadow: '1px 1px 4px rgba(0,0,0,0.25)',
+              maxWidth: '700px',
+            }}
+          >
+            Your trusted search engine for restaurants, shops, and services worldwide
           </Typography>
-          <Typography sx={{ color: '#fff', fontSize: '1.5rem', textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>
-            Provides info on restaurants, shops, services, and more
+
+          <Typography
+            sx={{
+              color: '#fff',
+              fontSize: { xs: '1.1rem', md: '1.5rem' },
+              opacity: 0.95,
+              textShadow: '1px 1px 3px rgba(0,0,0,0.25)',
+              maxWidth: '650px',
+            }}
+          >
+            Explore reviews, ratings, contact details, and directions — all in one place
           </Typography>
-          <Typography sx={{ color: '#fff', fontSize: '1.2rem', textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>
-            Offers user reviews, ratings, contact details, and directions
+
+          <Typography
+            sx={{
+              color: '#fff',
+              fontSize: { xs: '1rem', md: '1.2rem' },
+              fontWeight: 400,
+              opacity: 0.9,
+              textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+              maxWidth: '600px',
+            }}
+          >
+            Bringing local businesses closer to you with a world-class experience
           </Typography>
         </Box>
+
+
+
+
 
       </Box>
     </ThemeProvider>

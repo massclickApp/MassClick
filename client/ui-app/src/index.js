@@ -12,12 +12,12 @@ const theme = createTheme({
     primary: { main: '#1976d2' },
     secondary: { main: '#9c27b0' },
   },
-  typography: {
-    fontFamily: `'Inter', sans-serif`,
-    h1: { fontSize: '2rem' },
-    h2: { fontSize: '1.75rem' },
-    h3: { fontSize: '1.5rem' },
-    body1: { fontSize: '1rem' },
+   typography: {
+    fontFamily: `'Hogar', 'Inter', sans-serif`,
+    h1: { fontSize: '2rem', fontWeight: 600 },
+    h2: { fontSize: '1.75rem', fontWeight: 600 },
+    h3: { fontSize: '1.5rem', fontWeight: 600 },
+    body1: { fontSize: '1rem', fontWeight: 400 },
   },
 });
 

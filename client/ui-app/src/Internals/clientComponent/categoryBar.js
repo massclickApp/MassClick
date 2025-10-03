@@ -210,29 +210,29 @@ const CategoryBar = () => {
                 >
                     {/* Desktop "Add Your Business" Button - ADDED onClick handler */}
                     <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={handleOpenModal} 
-                        sx={{
-                            background: "linear-gradient(45deg, #FF6F00, #F7941D)",
-                            color: "white",
-                            textTransform: "none",
-                            fontSize: { xs: "0.9rem", sm: "1rem" },
-                            borderRadius: "30px",
-                            px: { xs: 2.5, sm: 3.5 },
-                            py: { xs: 1, sm: 1.2 },
-                            whiteSpace: "nowrap",
-                            boxShadow: "0 10px 30px rgba(255, 123, 0, 0.4)",
-                            transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
-                            "&:hover": {
-                                background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)",
-                                transform: "translateY(-3px)",
-                                boxShadow: "0 15px 40px rgba(255, 123, 0, 0.5)",
-                            },
-                        }}
-                    >
-                        Add Your Business
-                    </Button>
+  variant="contained"
+  startIcon={<AddIcon />}
+  onClick={handleOpenModal}
+  sx={{
+    background: "linear-gradient(45deg, #FF6F00, #F7941D)",
+    color: "white",
+    textTransform: "none",
+    fontSize: { xs: "0.9rem", sm: "1rem" },
+    borderRadius: "30px",
+    px: { xs: 2.5, sm: 3.5 },
+    py: { xs: 1, sm: 1.2 },
+    whiteSpace: "nowrap",
+    boxShadow: "0 10px 30px rgba(255, 123, 0, 0.4)",
+    transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+    "&:hover": {
+      background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)",
+      boxShadow: "0 15px 40px rgba(255, 123, 0, 0.5)",
+    },
+  }}
+>
+  Add Your Business
+</Button>
+
 
                     {/* Icons (Existing code) */}
                     <IconButton
