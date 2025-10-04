@@ -64,6 +64,11 @@
     margin: 0;
     line-height: 1.2;
 }
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
 
 /* Rating Badge Styling */
 .rating-badge {

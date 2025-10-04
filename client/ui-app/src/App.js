@@ -23,6 +23,7 @@ import { SnackbarProvider } from 'notistack';
 import SearchResults from './Internals/clientComponent/SearchResult/SearchResult.js';
 import { categoriesServices } from './Internals/clientComponent/serviceCard.js';
 import TrendingCards from './Internals/clientComponent/trendingSearch/trendingCard.js';
+import BusinessDetails from './Internals/clientComponent/cards/cardDetails.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -106,6 +107,7 @@ function App() {
               const Component = service.component || (() => <ComingSoon title={service.name} />);
               return <Route key={service.path} path={service.path} element={<Component />} />;
             })}
+            <Route path="/business/:id" element={<BusinessDetails />} />
 
             {categoriesServices.flatMap((category) =>
               category.items.map((item) => {

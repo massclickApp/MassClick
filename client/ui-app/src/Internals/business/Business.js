@@ -27,8 +27,9 @@ import {
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
 
-export default function Category() {
+export default function BusinessList() {
     const dispatch = useDispatch();
     const { businessList = [], loading, error } = useSelector(
         (state) => state.businessListReducer || {}
@@ -41,6 +42,70 @@ export default function Category() {
     const [editMode, setEditMode] = useState(false);
     const [editId, setEditId] = useState(null);
     const [errors, setErrors] = useState({});
+    const [newGalleryImages, setNewGalleryImages] = useState([]);
+
+    const [galleryDialog, setGalleryDialog] = useState({
+        open: false,
+        data: null,
+    });
+
+    const handleGalleryImageChange = (e) => {
+        const files = Array.from(e.target.files); // multiple files
+        const readers = files.map((file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        });
+
+        Promise.all(readers).then((images) => {
+            setNewGalleryImages((prev) => [...prev, ...images]);
+        });
+    };
+    const handleUploadGalleryImages = async () => {
+        if (!galleryDialog.data?._id) return;
+
+        const updatedData = {
+            ...galleryDialog.data,
+            businessImages: [...(galleryDialog.data.businessImages || []), ...newGalleryImages],
+        };
+
+        try {
+            await dispatch(editBusinessList(galleryDialog.data._id, updatedData));
+
+            setGalleryDialog((prev) => ({
+                ...prev,
+                data: { ...prev.data, businessImages: updatedData.businessImages },
+            }));
+
+            setNewGalleryImages([]);
+            handleCloseGallery()
+            await dispatch(getAllBusinessList());
+        } catch (err) {
+            console.error("Upload failed:", err);
+        }
+    };
+
+
+
+
+    const handleOpenGallery = (rowId) => {
+        const business = businessList.find((b) => b._id === rowId);
+
+        if (business) {
+            setGalleryDialog({ open: true, data: business });
+            setNewGalleryImages([]);
+        } else {
+            console.error("Business not found in Redux store");
+        }
+    };
+
+
+    const handleCloseGallery = () => {
+        setGalleryDialog({ open: false, data: null });
+    };
 
     const [formData, setFormData] = useState({
         clientId: "",
@@ -250,7 +315,8 @@ export default function Category() {
 
 
     const rows = businessList.map((bl, index) => ({
-        id: bl._id || index,
+        id: bl._id || index,   
+        _id: bl._id,
         clientId: bl.clientId || "-",
         businessName: bl.businessName || "-",
         plotNumber: bl.plotNumber || "-",
@@ -317,21 +383,32 @@ export default function Category() {
             filterable: false,
             renderCell: (params) => (
                 <div style={{ display: "flex", gap: "8px" }}>
-                    <IconButton
-                        color="primary"
+                    <IconButton   color="primary"
                         size="small"
-                        onClick={() => handleEdit(params.row)}
-                    >
+                     onClick={() => handleEdit(params.row)}>
                         <EditRoundedIcon fontSize="small" />
                     </IconButton>
-                    <IconButton
-                        color="error"
+                    <IconButton   color="error"
                         size="small"
-                        onClick={() => handleDelete(params.row)}
-                    >
+                     onClick={() => handleDelete(params.row)}>
                         <DeleteOutlineRoundedIcon fontSize="small" />
                     </IconButton>
                 </div>
+            ),
+        },
+        {
+            field: "gallery",
+            headerName: "Gallery",
+            flex: 1,
+            sortable: false,
+            filterable: false,
+            renderCell: (params) => (
+                <IconButton
+                    color="primary"
+                    onClick={() => handleOpenGallery(params.row._id)}
+                >
+                    <CollectionsBookmarkOutlinedIcon />
+                </IconButton>
             ),
         },
     ];
@@ -789,6 +866,52 @@ export default function Category() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Dialog open={galleryDialog.open} onClose={handleCloseGallery} maxWidth="md" fullWidth>
+                <DialogTitle>Gallery - {galleryDialog.data?.businessName}</DialogTitle>
+                <DialogContent dividers>
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                        {/* Existing images */}
+                        {galleryDialog.data?.businessImages?.map((img, idx) => (
+                            <Avatar key={idx} src={img} sx={{ width: 100, height: 100 }} />
+                        ))}
+
+                        {/* New selected images */}
+                        {newGalleryImages.map((img, idx) => (
+                            <Avatar
+                                key={idx}
+                                src={img}
+                                sx={{ width: 100, height: 100, border: "2px dashed green" }}
+                            />
+                        ))}
+                    </Box>
+
+                    {/* Upload input */}
+                    <Button variant="contained" component="label" sx={{ mt: 2 }}>
+                        Upload Images
+                        <input
+                            type="file"
+                            hidden
+                            multiple
+                            accept="image/*"
+                            onChange={handleGalleryImageChange}
+                        />
+                    </Button>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseGallery} color="secondary">
+                        Close
+                    </Button>
+                    <Button
+                        onClick={handleUploadGalleryImages}
+                        color="primary"
+                        variant="contained"
+                        disabled={newGalleryImages.length === 0}
+                    >
+                        Upload
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
 
         </Container>
     );

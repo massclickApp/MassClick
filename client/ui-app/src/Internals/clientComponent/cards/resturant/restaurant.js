@@ -57,6 +57,7 @@ const RestaurantsCards = () => {
                             imageSrc={imageSource}
                             rating="4.5"
                             reviews="250"
+                            to={`/business/${business._id}`} 
                         />
                     );
                 })}

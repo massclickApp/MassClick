@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './cards.css';
 
 const Cards = ({
@@ -9,71 +10,78 @@ const Cards = ({
     address,
     details,
     phone,
-    whatsapp, // Note: The actual number is not used in the UI based on your image
+    whatsapp,
+    to, 
     ...props
 }) => {
-
     return (
-        <div className="base-card" {...props}>
-            
-            {/* 1. Image Block */}
-            <div className="card-image-container">
-                <img
-                    src={imageSrc}
-                    alt={`${title} thumbnail`}
-                    className="card-image"
-                />
-            </div>
-
-            {/* 2. Content Block */}
-            <div className="card-content">
-
-                {/* Meta Section (Rating, Reviews, Title) */}
-                <div className="card-meta">
-                    {/* Rating Badge */}
-                    <span className="rating-badge">
-                        {rating}
-                    </span>
-                    {/* Reviews */}
-                    <span style={{ marginRight: '10px' }}>{reviews} Ratings</span>
-                    {/* Title */}
-                    <h2 className="card-title" style={{ marginLeft: '10px' }}>
-                        {title}
-                    </h2>
+        <Link to={to} className="card-link">
+            <div className="base-card" {...props}>
+                {/* 1. Image Block */}
+                <div className="card-image-container">
+                    <img
+                        src={imageSrc}
+                        alt={`${title} thumbnail`}
+                        className="card-image"
+                    />
                 </div>
 
-                {/* Address */}
-                <p className="card-address" style={{ fontSize: '14px', color: '#666', margin: '0 0 5px 0' }}>
-                    {address}
-                </p>
+                {/* 2. Content Block */}
+                <div className="card-content">
+                    {/* Meta Section */}
+                    <div className="card-meta">
+                        <span className="rating-badge">{rating}</span>
+                        <span style={{ marginRight: '10px' }}>{reviews} Ratings</span>
+                        <h2 className="card-title" style={{ marginLeft: '10px' }}>
+                            {title}
+                        </h2>
+                    </div>
 
-                {/* Details (Experience/Category) */}
-                <p className="card-details" style={{ fontSize: '14px', color: '#333', margin: '0 0 15px 0', fontWeight: 'bold' }}>
-                    {details}
-                </p>
+                    {/* Address */}
+                    <p className="card-address" style={{ fontSize: '14px', color: '#666', margin: '0 0 5px 0' }}>
+                        {address}
+                    </p>
 
-                {/* Action Buttons */}
-                <div className="card-actions">
-                    
-                    {/* Phone Button (Orange) */}
-                    <button className="card-action-button phone-button">
-                        {/* Assuming Font Awesome is linked: fa-phone icon */}
-                        <i className="fa fa-phone" style={{ marginRight: '5px' }}></i> {phone}
-                    </button>
+                    {/* Details */}
+                    <p className="card-details" style={{ fontSize: '14px', color: '#333', margin: '0 0 15px 0', fontWeight: 'bold' }}>
+                        {details}
+                    </p>
 
-                    {/* WhatsApp Button (Green) */}
-                    <button className="card-action-button whatsapp-button">
-                        {/* Assuming Font Awesome is linked: fa-whatsapp icon */}
-                        <i className="fa fa-whatsapp" style={{ marginRight: '5px' }}></i> WhatsApp
-                    </button>
+                    {/* Action Buttons */}
+                    <div className="card-actions">
+                        <button
+                            className="card-action-button phone-button"
+                            onClick={(e) => {
+                                e.preventDefault(); // prevent Link navigation
+                                window.location.href = `tel:${phone}`;
+                            }}
+                        >
+                            <i className="fa fa-phone" style={{ marginRight: '5px' }}></i> {phone}
+                        </button>
 
-                    {/* Send Enquiry Button (Blue) */}
-                    <button className="card-action-button enquiry-button">
-                        Send Enquiry
-                    </button>
+                        <button
+                            className="card-action-button whatsapp-button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                window.open(`https://wa.me/${whatsapp}`, '_blank');
+                            }}
+                        >
+                            <i className="fa fa-whatsapp" style={{ marginRight: '5px' }}></i> WhatsApp
+                        </button>
+
+                        <button
+                            className="card-action-button enquiry-button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                alert("Enquiry form will open!");
+                            }}
+                        >
+                            Send Enquiry
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
